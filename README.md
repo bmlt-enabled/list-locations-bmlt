@@ -3,7 +3,8 @@
 List Locations BMLT is a plugin that returns all unique towns or counties from your BMLT server for a given service body on your site.
 
 # SHORTCODE
-Basic: [list_locations root_server="https://www.domain.org/main_server" services="12"]
+Basic: `[list_locations root_server="https://www.domain.org/main_server" services="12"]`
+
 Attributes: root_server, services, recursive, state, delimiter, list
 
 -- Shortcode parameters can be combined.
