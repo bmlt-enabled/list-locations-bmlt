@@ -15,23 +15,23 @@ A minimum of root_server and services attribute are required, which would return
 
 `Ex. [list_locations root_server="https://www.domain.org/main_server" services="50"]`
 
-Recursive: to recurse service bodies add `recursive="1"`
+**Recursive:** to recurse service bodies add `recursive="1"`
 
 `Ex. [list_locations root_server="https://www.domain.org/main_server" services="50" recursive="1"]`
 
-State: to remove appending of the state add `state="0"`
+**State:** to remove appending of the state add `state="0"`
 
 `Ex. [list_locations root_server="https://www.domain.org/main_server" services="50" state="0"]`
 
-Services: to add multiple service bodies just seperate by a comma.
+**Services:** to add multiple service bodies just seperate by a comma.
 
 `Ex. [list_locations root_server="https://www.domain.org/main_server" services="50,37,26"]`
 
-Delimiter: to change the delimiter to something besides a comma I would add `delimiter=" - "` or to create newlines between each I could do this `delimiter="<br>"`, or `delimiter="<p></p>"`
+**Delimiter:** to change the delimiter to something besides a comma I would add `delimiter=" - "` or to create newlines between each I could do this `delimiter="<br>"`, or `delimiter="<p></p>"`
 
 `Ex. [list_locations root_server="https://www.domain.org/main_server" delimiter="<br>"]`
 
-List: If I wanted to view counties instead of towns I would add `list="county"` the default is town.
+**List:** If I wanted to view counties instead of towns I would add `list="county"` the default is town.
 
 `Ex. [list_locations root_server="https://www.domain.org/main_server" list="town"]`
 
