@@ -1,6 +1,6 @@
 # Description
 
-List Locations BMLT is a plugin that pulls the Just For Today from jftna.org and puts it on your page or post. Use the widget Fetch JFT to add to your sidebar or footer.
+List Locations BMLT is a plugin that returns all unique towns or counties from your BMLT server for a given service body on your site.
 
 # SHORTCODE
 Basic: [list_locations root_server="https://www.domain.org/main_server" services="12"]
