@@ -1,6 +1,7 @@
 === List Locations BMLT ===
 
 Contributors: pjaudiomv
+Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Tags: bmlt, basic meeting list toolbox, List Locations, List Locations bmlt, narcotics anonymous, na
 Tested up to: 4.9.8
 Stable tag: 1.0.1

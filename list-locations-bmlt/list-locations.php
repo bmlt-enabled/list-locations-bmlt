@@ -1,6 +1,7 @@
 <?php
 /*
 Plugin Name: List Locations BMLT
+Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Author: Patrick J NERNA
 Description: This plugin returns all unique towns or counties for given service body on your site Simply add [list_locations] shortcode to your page and set shortcode attributes accordingly. Required attributes are root_server and services.
 Version: 1.0.1
@@ -20,11 +21,11 @@ function list_locations_func($atts = []) {
         'delimiter' => ',',
         'list' => 'town'
     ), $atts));
-    $services = trim($services);
-    $root_server = trim(strtolower($root_server));
-    $recursive = trim($recursive);
-    $state = trim($state);
-    $list = trim($list);
+    $services = sanitize_text_field($services);
+    $root_server = esc_url_raw($root_server);
+    $recursive = sanitize_text_field($recursive);
+    $state = sanitize_text_field($state);
+    $list = sanitize_text_field($list);
 
     if ($root_server == '') {
         return '<p><strong>List Locations Error: Root Server missing. Please Verify you have entered a Root Server using the \'root_server\' shortcode attribute</strong></p>';
@@ -45,13 +46,16 @@ function list_locations_func($atts = []) {
     $result = json_decode($results, true);
     $unique_city = array();
     foreach($result as $value) {
-        if ($list == 'county') {
+        if ($list == 'town') {
+            $finalResult = $state == "1" ? str_replace ( ',', '', trim(ucfirst($value['location_municipality']))) . " " . str_replace ( '.', '', trim($value['location_province'])) : str_replace ( ',', '', trim(ucfirst($value['location_municipality'])));
+            array_push($unique_city, $finalResult);
+        }
+        else if ($list == 'county') {
             $finalResult = $state == "1" ? str_replace ( ' County', '', trim(ucfirst($value['location_sub_province']))) . " " . str_replace ( '.', '', trim($value['location_province'])) : str_replace ( ' County', '', trim(ucfirst($value['location_sub_province'])));
             array_push($unique_city, $finalResult);
         }
         else {
-            $finalResult = $state == "1" ? str_replace ( ',', '', trim(ucfirst($value['location_municipality']))) . " " . str_replace ( '.', '', trim($value['location_province'])) : str_replace ( ',', '', trim(ucfirst($value['location_municipality'])));
-            array_push($unique_city, $finalResult);
+            return '<p><strong>List Locations Error: List attribute incorrect. Please Verify you have entered either town or county.</strong></p>';
         }
     }
     $unique_city = array_unique($unique_city);
