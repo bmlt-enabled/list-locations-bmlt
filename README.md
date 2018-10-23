@@ -27,9 +27,9 @@ A minimum of root_server and services attribute are required, which would return
 
 `Ex. [list_locations root_server="https://www.domain.org/main_server" services="50,37,26"]`
 
-**Delimiter:** to change the delimiter to something besides a comma I would add `delimiter=" - "` or to create newlines between each I could do this `delimiter="<br>"`, or `delimiter="<p></p>"`
+**Delimiter:** to change the delimiter to something besides a comma I would add `delimiter=" - "` or to create newlines between each I could do this `delimiter="&lt;br&gt;", or delimiter="&lt;p&gt;&lt;/p&gt;"
 
-`Ex. [list_locations root_server="https://www.domain.org/main_server" delimiter="<br>"]`
+Ex. [list_locations root_server="https://www.domain.org/main_server" delimiter="&lt;br&gt;"]
 
 **List:** If I wanted to view counties instead of towns I would add `list="county"` the default is town.
 
@@ -53,3 +53,12 @@ This section describes how to install the plugin and get it working.
 3. Add [list_locations] shortcode to your Wordpress page/post.
 4. At a minimum assign root_server and services attributes.
 
+== Changelog ==
+
+= 1.0.2 =
+
+* Cleanup readme.
+
+= 1.0.1 =
+
+* Initial Release
