@@ -53,7 +53,7 @@ This section describes how to install the plugin and get it working.
 3. Add [list_locations] shortcode to your Wordpress page/post.
 4. At a minimum assign root_server and services attributes.
 
-== Changelog ==
+# Changelog
 
 = 1.0.2 =
 
