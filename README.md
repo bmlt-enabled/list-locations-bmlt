@@ -55,6 +55,10 @@ This section describes how to install the plugin and get it working.
 
 # Changelog
 
+= 1.1.1 =
+
+* convert quotes to html entity for wordpress readme examples.
+
 = 1.1.0 =
 
 * Add logo.
