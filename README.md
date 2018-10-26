@@ -39,6 +39,9 @@ Ex. [list_locations root_server="https://www.domain.org/main_server" delimiter="
 
 <a href="https://www.crna.org/area-service-committees/">https://www.crna.org/area-service-committees/</a>
 
+<a href="https://heartoflongislandna.org" target="_blank">https://heartoflongislandna.org</a>
+
+<a href="https://eanaonline.org" target="_blank">https://eanaonline.org</a>
 
 # MORE INFORMATION
 

@@ -45,10 +45,15 @@ Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; l
 
 <a href="https://www.crna.org/area-service-committees/">https://www.crna.org/area-service-committees/</a>
 
+<a href="https://heartoflongislandna.org" target="_blank">https://heartoflongislandna.org</a>
+
+<a href="https://eanaonline.org" target="_blank">https://eanaonline.org</a>
+
 
 == MORE INFORMATION ==
 
 <a href="https://github.com/pjaudiomv/list-locations-bmlt" target="_blank">https://github.com/pjaudiomv/list-locations-bmlt</a>
+
 
 == Installation ==
 
