@@ -5,8 +5,8 @@ Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Tags: bmlt, basic meeting list toolbox, List Locations, List Locations bmlt, narcotics anonymous, na
 Requires at least: 4.0
 Requires PHP: 5.6
-Tested up to: 5.0.0
-Stable tag: 1.1.1
+Tested up to: 4.9.8
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ List Locations BMLT is a plugin that returns all unique towns or counties from y
 
 SHORTCODE
 Basic: [list_locations]
-Attributes: root_server, services, recursive, state, delimiter, list
+Attributes: root_server, services, recursive, state, delimiter, list, state_skip
 
 -- Shortcode parameters can be combined
 
@@ -31,6 +31,9 @@ Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; s
 
 **State:** to remove appending of the state add state=&quot;0&quot;
 Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; services=&quot;50&quot; state=&quot;0&quot;]
+
+**State Skip:** to skip the inclusion of a state when using state=&quot;1&quot; add state_skip=&quot;NC&quot;
+Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; services=&quot;50&quot; state=&quot;1&quot; state_skip=&quot;NC&quot;]
 
 **Services:** to add multiple service bodies just seperate by a comma.
 Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; services=&quot;50,37,26&quot;]
@@ -66,6 +69,10 @@ This section describes how to install the plugin and get it working.
 
 
 == Changelog ==
+
+= 2.0.0 =
+
+* Added Settings option page, ability to skip a state when using state shortcode using state_skip.
 
 = 1.1.1 =
 
