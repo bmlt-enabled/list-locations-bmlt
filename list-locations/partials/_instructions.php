@@ -60,7 +60,7 @@
     <h3 class="help-accordian"><strong>&nbsp;&nbsp;&nbsp;&nbsp;- list</strong></h3>
     <div>
         <p><strong>list</strong></p>
-        <p>If I wanted to view counties instead of towns I would add list=&quot;county&quot; the default is town.</p>
+        <p>You can list by the following town, county, borough, neighborhood. The default is town.</p>
         <p>Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; list=&quot;town&quot;]</p>
     </div>
 </div>

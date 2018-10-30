@@ -35,7 +35,7 @@ A minimum of root_server and services attribute are required, which would return
 
 Ex. [list_locations root_server="https://www.domain.org/main_server" delimiter="&lt;br&gt;"]
 
-**List:** If I wanted to view counties instead of towns I would add `list="county"` the default is town.
+**List:** You can list by the following town, county, borough, neighborhood. The default is town..
 
 `Ex. [list_locations root_server="https://www.domain.org/main_server" list="town"]`
 
@@ -62,9 +62,10 @@ This section describes how to install the plugin and get it working.
 
 # Changelog
 
-= 2.0.0 =
 
-* Added Settings option page, ability to skip a state when using state shortcode using state_skip.
+= 2.1.0 =
+
+* Added list by borough and neighborhood.
 
 = 1.1.1 =
 

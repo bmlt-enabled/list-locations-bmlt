@@ -6,7 +6,7 @@ Tags: bmlt, basic meeting list toolbox, List Locations, List Locations bmlt, nar
 Requires at least: 4.0
 Requires PHP: 5.6
 Tested up to: 4.9.8
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,7 +41,7 @@ Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; s
 **Delimiter:** to change the delimiter to something besides a comma I would add delimiter=&quot; - &quot; or to create newlines between each I could do this delimiter=&quot;&lt;br&gt;&quot;, or delimiter=&quot;&lt;p&gt;&lt;/p&gt;&quot;
 Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; delimiter=&quot;&lt;br&gt;&quot;]
 
-**List:** If I wanted to view counties instead of towns I would add list=&quot;county&quot; the default is town.
+**List:** You can list by the following town, county, borough, neighborhood. The default is town.
 Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; list=&quot;town&quot;]
 
 == EXAMPLES ==
@@ -67,8 +67,15 @@ This section describes how to install the plugin and get it working.
 3. Add [list_locations] shortcode to your Wordpress page/post.
 4. At a minimum assign root_server and services attributes.
 
+== Screenshots ==
+
+1. screenshot-1.png
 
 == Changelog ==
+
+= 2.1.0 =
+
+* Added list by borough and neighborhood.
 
 = 2.0.0 =
 

@@ -4,7 +4,7 @@ Plugin Name: List Locations BMLT
 Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Author: pjaudiomv
 Description: This plugin returns all unique towns or counties for given service body on your site Simply add [list_locations] shortcode to your page and set shortcode attributes accordingly. Required attributes are root_server and services.
-Version: 2.0.0
+Version: 2.1.0
 Install: Drop this directory into the "wp-content/plugins/" directory and activate it.
 */
 /* Disallow direct access to the plugin file */
@@ -170,6 +170,16 @@ if (!class_exists("ListLocations")) {
                             $finalResult = $state == "1" ? str_replace(' County', '', trim(ucfirst($value['location_sub_province']))) . str_replace('.', '', $location_state) : str_replace(' County', '', trim(ucfirst($value['location_sub_province'])));
                             array_push($unique_city, $finalResult);
                         }
+                    } else if ($list == 'borough') {
+                        if ($value['location_city_subsection'] != '') {
+                            $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_city_subsection']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_city_subsection'])));
+                            array_push($unique_city, $finalResult);
+                        }
+                    } else if ($list == 'neighborhood') {
+                        if ($value['location_neighborhood'] != '') {
+                            $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_neighborhood']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_neighborhood'])));
+                            array_push($unique_city, $finalResult);
+                        }
                     } else {
                         return '<p><strong>List Locations Error: List attribute incorrect. Please Verify you have entered either town or county.</strong></p>';
                     }
@@ -320,13 +330,26 @@ if (!class_exists("ListLocations")) {
                             <li>
                                 <label for="list_select">List Type: </label>
                                 <select style="display:inline;" id="list_select" name="list_select"  class="list_by_select">
-                                <?php if ($this->options['list_select'] == 'town') { ?>
-                                    <option selected="selected" value="town">Town</option>
-                                    <option value="county">County</option>
-                                    <?php
-                                } else { ?>
+                                <?php if ($this->options['list_select'] == 'county') { ?>
                                     <option value="town">Town</option>
                                     <option selected="selected" value="county">County</option>
+                                    <option value="borough">Borough</option>
+                                    <option value="neighborhood">Neighborhood</option>
+                                <?php } else if ($this->options['list_select'] == 'borough') { ?>
+                                    <option value="town">Town</option>
+                                    <option value="county">County</option>
+                                    <option selected="selected" value="borough">Borough</option>
+                                    <option value="neighborhood">Neighborhood</option>
+                                <?php } else if ($this->options['list_select'] == 'neighborhood') { ?>
+                                    <option value="town">Town</option>
+                                    <option value="county">County</option>
+                                    <option value="borough">Borough</option>
+                                    <option selected="selected" value="neighborhood">Neighborhood</option>
+                               <?php } else { ?>
+                                    <option selected="selected" value="town">Town</option>
+                                    <option value="county">County</option>
+                                    <option value="borough">Borough</option>
+                                    <option value="neighborhood">Neighborhood</option>
                                 <?php
                                 }
                                     ?>
@@ -404,7 +427,7 @@ if (!class_exists("ListLocations")) {
             }
             $listUrl = wp_remote_retrieve_body(wp_remote_get($root_server . "/client_interface/json/?switcher=GetSearchResults"
                 . $services_query
-                . "&data_field_key=location_municipality,location_province,location_sub_province"
+                . "&data_field_key=location_municipality,location_province,location_sub_province,location_city_subsection,location_neighborhood"
                 . ($recursive == "1" ? "&recursive=1" : "")));
 
             return $listUrl;
@@ -426,7 +449,7 @@ if (!class_exists("ListLocations")) {
             }
             $listUrl = wp_remote_retrieve_body(wp_remote_get($root_server . "/client_interface/json/?switcher=GetSearchResults"
                 . $services_query
-                . "&data_field_key=location_municipality,location_province,location_sub_province"
+                . "&data_field_key=location_province"
                 . ($recursive == "1" ? "&recursive=1" : "")));
 
             $listResults = json_decode($listUrl, true);
@@ -441,7 +464,6 @@ if (!class_exists("ListLocations")) {
 
             return $unique_states;
         }
-
     }
     //End Class ListLocations
 }
