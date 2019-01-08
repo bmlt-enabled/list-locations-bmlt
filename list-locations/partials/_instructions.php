@@ -51,6 +51,12 @@
         <p>To skip the inclusion of a state when using state=&quot;1&quot; add state_skip=&quot;NC&quot;. This can be useful if you want to include the state for all states but one.</p>
         <p>Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; services=&quot;50&quot; state=&quot;1&quot; state_skip=&quot;NC&quot;]</p>
     </div>
+    <h3 class="help-accordian"><strong>&nbsp;&nbsp;&nbsp;&nbsp;- city_skip</strong></h3>
+    <div>
+        <p><strong>city_skip</strong></p>
+        <p>To skip the inclusion of a city add city_skip=&quot;Indianapolis&quot;. This can be useful when mentioning a city out of order or in a different part of the text.</p>
+        <p>Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; services=&quot;50&quot; state=&quot;1&quot; city_skip=&quot;Indianapolis&quot;]</p>
+    </div>
     <h3 class="help-accordian"><strong>&nbsp;&nbsp;&nbsp;&nbsp;- delimiter</strong></h3>
     <div>
         <p><strong>delimiter</strong></p>

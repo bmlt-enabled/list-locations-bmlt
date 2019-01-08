@@ -126,7 +126,8 @@ if (!class_exists("ListLocations")) {
                 'state'       => '',
                 'delimiter'   => '',
                 'list'        => '',
-                'state_skip'  => ''
+                'state_skip'  => '',
+                'city_skip'   => ''
             ), $atts));
 
             $area_data_dropdown   = explode(',', $this->options['service_body_dropdown']);
@@ -139,6 +140,7 @@ if (!class_exists("ListLocations")) {
             $delimiter            = ($delimiter   != '' ? $delimiter   : $this->options['delimiter_textbox']);
             $list                 = ($list        != '' ? $list        : $this->options['list_select']);
             $state_skip           = ($state_skip  != '' ? $state_skip  : $this->options['state_skip_dropdown']);
+            $city_skip            = ($city_skip   != '' ? $city_skip   : $this->options['city_skip_dropdown']);
 
             if ($delimiter == '' && $this->options['delimiter_textbox'] == '') {
                 $delimiter = ', ';
@@ -160,6 +162,11 @@ if (!class_exists("ListLocations")) {
                     } else {
                         $location_state = ' ' . strtoupper($value['location_province']);
                     }
+                    if (strtoupper($value['location_municipality']) == strtoupper($city_skip)){
+                        $value['location_municipality'] = '';
+                    }/*else{
+                        $location_municipality = ' ' . strtoupper($value['location_municipality']);
+                    }*/
                     if ($list == 'town') {
                         if ($value['location_municipality'] != '') {
                             $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_municipality']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_municipality'])));
@@ -243,6 +250,7 @@ if (!class_exists("ListLocations")) {
                 $this->options['state_checkbox']         = sanitize_text_field($_POST['state_checkbox']);
                 $this->options['list_select']            = sanitize_text_field($_POST['list_select']);
                 $this->options['state_skip_dropdown']    = sanitize_text_field($_POST['state_skip_dropdown']);
+                $this->options['city_skip_dropdown']     = sanitize_text_field($_POST['city_skip_dropdown']);
                 $this->save_admin_options();
                 echo '<div class="updated"><p>Success! Your changes were successfully saved!</p></div>';
             }
@@ -328,6 +336,23 @@ if (!class_exists("ListLocations")) {
                                 </select>
                             </li>
                             <li>
+                                <label for="city_skip_dropdown">City Skip: </label>
+                                <select style="display:inline;" id="city_skip_dropdown" name="city_skip_dropdown"  class="city_skip_dropdown">
+                                    <option value=""></option>
+                                    <?php
+                                    $service_body_cities_area          = explode(',', $this->options['service_body_dropdown']);
+                                    $service_body_cities               = $service_body_cities_area[1];
+                                    $service_body_cities_dropdown      = $this->getCityList($this->options['root_server'], $service_body_states, $this->options['recursive']);
+                                    foreach ($service_body_cities_dropdown as $key => $unique_city) {
+                                        if ($unique_city == $this->options['city_skip_dropdown']) { ?>
+                                            <option selected="selected" value="<?php echo $unique_city; ?>"><?php echo $unique_city; ?></option>
+                                        <?php } else { ?>
+                                            <option value="<?php echo $unique_city; ?>"><?php echo $unique_city; ?></option>
+                                        <?php }
+                                    } ?>
+                                </select>
+                            </li>
+                            <li>
                                 <label for="list_select">List Type: </label>
                                 <select style="display:inline;" id="list_select" name="list_select"  class="list_by_select">
                                 <?php if ($this->options['list_select'] == 'county') { ?>
@@ -395,7 +420,8 @@ if (!class_exists("ListLocations")) {
                     'state_checkbox'        => '1',
                     'delimiter_textbox'     => ', ',
                     'list_select'           => 'town',
-                    'state_skip_dropdown'   => ''
+                    'state_skip_dropdown'   => '',
+                    'city_skip_dropdown'    => ''
                 );
                 update_option($this->optionsName, $theOptions);
             }
@@ -463,6 +489,30 @@ if (!class_exists("ListLocations")) {
             asort($unique_states);
 
             return $unique_states;
+        }
+
+        public function getCityList($root_server, $services, $recursive) {
+            $serviceBodies = explode(',', $services);
+            $services_query = '';
+            foreach ($servicesbodies as $servicebody) {
+                $services_query .= '&services[]=' .$serviceBody;
+            }
+            $listUrl = wp_remote_retrieve_body(wp_remote_get($root_server . "/client_interface/json/?switcher=GetSearchResults"
+                . $services_query
+                . "&data_field_key=location_municipality"
+                . ($recursive == "1" ? "&recursive=1" : "")));
+
+            $listResults = json_decode($listUrl, true);
+            $unique_cities = array();
+            foreach($listResults as $value) {
+                if ($value['location_municipality'] != '') {
+                    $unique_cities[] .= str_replace ( '.', '', strtoupper($value['location_municipality']));
+                }
+            }
+            $unique_cities = array_unique($unique_cities);
+            asort($unique_cities);
+
+            return $unique_cities;
         }
     }
     //End Class ListLocations
