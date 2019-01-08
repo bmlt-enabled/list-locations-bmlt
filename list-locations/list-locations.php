@@ -126,7 +126,8 @@ if (!class_exists("ListLocations")) {
                 'state'       => '',
                 'delimiter'   => '',
                 'list'        => '',
-                'state_skip'  => ''
+                'state_skip'  => '',
+                'town'        => ''
             ), $atts));
 
             $area_data_dropdown   = explode(',', $this->options['service_body_dropdown']);
@@ -139,6 +140,7 @@ if (!class_exists("ListLocations")) {
             $delimiter            = ($delimiter   != '' ? $delimiter   : $this->options['delimiter_textbox']);
             $list                 = ($list        != '' ? $list        : $this->options['list_select']);
             $state_skip           = ($state_skip  != '' ? $state_skip  : $this->options['state_skip_dropdown']);
+            $town                 = ($town        != '' ? $town        : $this->options['town_checkbox']);
 
             if ($delimiter == '' && $this->options['delimiter_textbox'] == '') {
                 $delimiter = ', ';
@@ -155,34 +157,71 @@ if (!class_exists("ListLocations")) {
             $unique_city = array();
 
             foreach($listResults as $value) {
-                    if (strtoupper($value['location_province']) == strtoupper($state_skip)) {
-                        $location_state = '';
-                    } else {
-                        $location_state = ' ' . strtoupper($value['location_province']);
+                if ($value['location_province'] != '') {
+                    $locationValueState        = str_replace('.', '', trim(strtoupper($value['location_province'])));
+                }
+                if ($value['location_province'] != '') {
+                    $locationValueState        = str_replace('.', '', trim(strtoupper($value['location_province'])));
+                }
+                if ($value['location_municipality'] != '') {
+                    $locationValueTown         = str_replace(',', '', trim(ucwords(strtolower($value['location_municipality']))));
+                }
+                if ($value['location_sub_province'] != '') {
+                    $locationValueCounty       = str_replace(' County', '', trim(ucwords(strtolower($value['location_sub_province']))));
+                }
+                if ($value['location_city_subsection'] != '') {
+                    $locationValueBorough      = str_replace(',', '', trim(ucwords(strtolower($value['location_city_subsection']))));
+                }
+                if ($value['location_neighborhood'] != '') {
+                    $locationValueNeighborhood = str_replace(',', '', trim(ucwords(strtolower($value['location_neighborhood']))));
+                }
+
+                if ($locationValueState == $state_skip) {
+                    $location_state = '';
+                } else {
+                    $location_state = ' ' . $locationValueState;
+                }
+
+                if ($list == 'town') {
+                    $finalResult = $state == "1" ? $locationValueTown . $location_state : $locationValueTown;
+                    array_push($unique_city, $finalResult);
+
+                } else if ($list == 'county') {
+                    $finalResult = $state == "1" ? $locationValueCounty . $location_state : $locationValueCounty;
+                    array_push($unique_city, $finalResult);
+
+                } else if ($list == 'borough') {
+                    if ($state == 1 && $town !=1) {
+                        $finalResult = $locationValueBorough . $location_state;
                     }
-                    if ($list == 'town') {
-                        if ($value['location_municipality'] != '') {
-                            $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_municipality']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_municipality'])));
-                            array_push($unique_city, $finalResult);
-                        }
-                    } else if ($list == 'county') {
-                        if ($value['location_sub_province'] != '') {
-                            $finalResult = $state == "1" ? str_replace(' County', '', trim(ucfirst($value['location_sub_province']))) . str_replace('.', '', $location_state) : str_replace(' County', '', trim(ucfirst($value['location_sub_province'])));
-                            array_push($unique_city, $finalResult);
-                        }
-                    } else if ($list == 'borough') {
-                        if ($value['location_city_subsection'] != '') {
-                            $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_city_subsection']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_city_subsection'])));
-                            array_push($unique_city, $finalResult);
-                        }
-                    } else if ($list == 'neighborhood') {
-                        if ($value['location_neighborhood'] != '') {
-                            $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_neighborhood']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_neighborhood'])));
-                            array_push($unique_city, $finalResult);
-                        }
-                    } else {
-                        return '<p><strong>List Locations Error: List attribute incorrect. Please Verify you have entered either town or county.</strong></p>';
+                    else if ($state !=1 && $town == 1 ) {
+                        $finalResult = $locationValueBorough .' '. $locationValueTown;
                     }
+                    else if ($state !=0 && $town !=0) {
+                        $finalResult = $locationValueBorough . ' ' . $locationValueTown . $location_state;
+                    }
+                    else {
+                        $finalResult = $locationValueBorough;
+                    }
+                    array_push($unique_city, $finalResult);
+
+                } else if ($list == 'neighborhood') {
+                    if ($state == 1 && $town !=1) {
+                        $finalResult = $locationValueNeighborhood . $location_state;
+                    }
+                    else if ($state !=1 && $town == 1 ) {
+                        $finalResult = $locationValueNeighborhood .' '. $locationValueTown;
+                    }
+                    else if ($state !=0 && $town !=0) {
+                        $finalResult = $locationValueNeighborhood . ' ' . $locationValueTown . $location_state;
+                    }
+                    else {
+                        $finalResult = $locationValueNeighborhood;
+                    }
+                    array_push($unique_city, $finalResult);
+                } else {
+                    echo '<p><strong>List Locations Error: List attribute incorrect. Please Verify you have entered either town, county, borough or neighborhood.</strong></p>';
+                }
             }
             $unique_city = array_unique($unique_city);
             asort($unique_city);
@@ -243,6 +282,7 @@ if (!class_exists("ListLocations")) {
                 $this->options['state_checkbox']         = sanitize_text_field($_POST['state_checkbox']);
                 $this->options['list_select']            = sanitize_text_field($_POST['list_select']);
                 $this->options['state_skip_dropdown']    = sanitize_text_field($_POST['state_skip_dropdown']);
+                $this->options['town_checkbox']          = sanitize_text_field($_POST['town_checkbox']);
                 $this->save_admin_options();
                 echo '<div class="updated"><p>Success! Your changes were successfully saved!</p></div>';
             }
@@ -328,6 +368,10 @@ if (!class_exists("ListLocations")) {
                                 </select>
                             </li>
                             <li>
+                                <input type="checkbox" id="town_checkbox" name="town_checkbox" value="1" <?php echo ($this->options['town_checkbox'] == "1" ? "checked" : "") ?>/>
+                                <label for="town_checkbox">Show Town</label>
+                            </li>
+                            <li>
                                 <label for="list_select">List Type: </label>
                                 <select style="display:inline;" id="list_select" name="list_select"  class="list_by_select">
                                 <?php if ($this->options['list_select'] == 'county') { ?>
@@ -395,7 +439,8 @@ if (!class_exists("ListLocations")) {
                     'state_checkbox'        => '1',
                     'delimiter_textbox'     => ', ',
                     'list_select'           => 'town',
-                    'state_skip_dropdown'   => ''
+                    'state_skip_dropdown'   => '',
+                    'state_checkbox'        => '0'
                 );
                 update_option($this->optionsName, $theOptions);
             }
@@ -456,7 +501,7 @@ if (!class_exists("ListLocations")) {
             $unique_states = array();
             foreach($listResults as $value) {
                 if ($value['location_province'] != '') {
-                    $unique_states[] .= str_replace ( '.', '', strtoupper($value['location_province']));
+                    $unique_states[] .= str_replace ( '.', '', trim(strtoupper($value['location_province'])));
                 }
             }
             $unique_states = array_unique($unique_states);
