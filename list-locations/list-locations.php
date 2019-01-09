@@ -13,22 +13,26 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 }
 
 if (!class_exists("ListLocations")) {
-    class ListLocations {
-        var $optionsName = 'list_locations_options';
-        var $options = array();
-        const http_retrieve_args = array(
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+    class ListLocations
+// phpcs:enable PSR1.Classes.ClassDeclaration.MissingNamespace
+    {
+        public $optionsName = 'list_locations_options';
+        public $options = array();
+        const HTTP_RETRIEVE_ARGS = array(
             'headers' => array(
                 'User-Agent' => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +ListLocationsBMLT'
             ),
             'timeout' => 60
         );
-        function __construct() {
+        public function __construct()
+        {
             $this->getOptions();
             if (is_admin()) {
                 // Back end
-                add_action("admin_notices", array(&$this, "is_root_server_missing"));
-                add_action("admin_enqueue_scripts", array(&$this, "enqueue_backend_files"),500);
-                add_action("admin_menu", array(&$this, "admin_menu_link"));
+                add_action("admin_notices", array(&$this, "isRootServerMissing"));
+                add_action("admin_enqueue_scripts", array(&$this, "enqueueBackendFiles"), 500);
+                add_action("admin_menu", array(&$this, "adminMenuLink"));
             } else {
                 // Front end
                 add_shortcode('list_locations', array(
@@ -39,20 +43,12 @@ if (!class_exists("ListLocations")) {
             // Content filter
             add_filter('the_content', array(
                 &$this,
-                'filter_content'
+                'filterContent'
             ), 0);
         }
 
-        function has_shortcode() {
-            $post_to_check = get_post(get_the_ID());
-            // check the post content for the short code
-            if (stripos($post_to_check->post_content, '[list_locations') !== false) {
-                return true;
-            }
-            return false;
-        }
-
-        function is_root_server_missing() {
+        public function isRootServerMissing()
+        {
             $root_server = $this->options['root_server'];
             if ($root_server == '') {
                 echo '<div id="message" class="error"><p>Missing BMLT Root Server in settings for List Locations BMLT.</p>';
@@ -62,41 +58,47 @@ if (!class_exists("ListLocations")) {
             }
             add_action("admin_notices", array(
                 &$this,
-                "clear_admin_message"
+                "clearAdminMessage"
             ));
         }
 
-        function clear_admin_message() {
+        public function clearAdminMessage()
+        {
             remove_action("admin_notices", array(
                 &$this,
-                "is_root_server_missing"
+                "isRootServerMissing"
             ));
         }
-
-        function ListLocations() {
+        // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+        public function ListLocations()
+        {
+        // phpcs:enable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
             $this->__construct();
         }
 
-        function filter_content($content) {
+        public function filterContent($content)
+        {
             return $content;
         }
 
         /**
         * @param $hook
         */
-        function enqueue_backend_files($hook) {
+        public function enqueueBackendFiles($hook)
+        {
             if ($hook == 'settings_page_list-locations') {
-                wp_enqueue_style('list-locations-admin-ui-css',  plugins_url('css/start/jquery-ui.css', __FILE__), false, '1.11.4', false);
+                wp_enqueue_style('list-locations-admin-ui-css', plugins_url('css/start/jquery-ui.css', __FILE__), false, '1.11.4', false);
                 wp_enqueue_style("chosen", plugin_dir_url(__FILE__) . "css/chosen.min.css", false, "1.2", 'all');
                 wp_enqueue_style("list-locations-css", plugin_dir_url(__FILE__) . "css/list_locations.css", false);
                 wp_enqueue_script("chosen", plugin_dir_url(__FILE__) . "js/chosen.jquery.min.js", array('jquery'), "1.2", true);
-                wp_enqueue_script('list-locations-admin', plugins_url('js/list_locations_admin.js', __FILE__), array('jquery'), filemtime( plugin_dir_path(__FILE__) . "js/list_locations_admin.js"), false);
+                wp_enqueue_script('list-locations-admin', plugins_url('js/list_locations_admin.js', __FILE__), array('jquery'), filemtime(plugin_dir_path(__FILE__) . "js/list_locations_admin.js"), false);
                 wp_enqueue_script('common');
                 wp_enqueue_script('jquery-ui-accordion');
             }
         }
 
-        function testRootServer($root_server) {
+        public function testRootServer($root_server)
+        {
             $args = array(
                 'timeout' => '10',
                 'headers' => array(
@@ -104,20 +106,23 @@ if (!class_exists("ListLocations")) {
                 )
             );
             $results = wp_remote_get("$root_server/client_interface/serverInfo.xml", $args);
-            $httpcode = wp_remote_retrieve_response_code( $results );
-            $response_message = wp_remote_retrieve_response_message( $results );
-            if ($httpcode != 200 && $httpcode != 302 && $httpcode != 304 && ! empty( $response_message )) {
+            $httpcode = wp_remote_retrieve_response_code($results);
+            $response_message = wp_remote_retrieve_response_message($results);
+            if ($httpcode != 200 && $httpcode != 302 && $httpcode != 304 && ! empty($response_message)) {
                 //echo '<p>Problem Connecting to BMLT Root Server: ' . $root_server . '</p>';
                 return false;
             };
             $results = simplexml_load_string(wp_remote_retrieve_body($results));
             $results = json_encode($results);
-            $results = json_decode($results,true);
+            $results = json_decode($results, true);
             $results = $results['serverVersion']['readableString'];
             return $results;
         }
 
-        function list_locations($atts, $content = null) {
+        // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+        public function list_locations($atts, $content = null)
+        {
+        // phpcs:enable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
             global $unique_areas;
             extract(shortcode_atts(array(
                 "root_server" => '',
@@ -156,40 +161,40 @@ if (!class_exists("ListLocations")) {
             $listResults = json_decode($this->getListResults($root_server, $services, $recursive), true);
             $unique_city = array();
 
-            foreach($listResults as $value) {
-                    if (strtoupper($value['location_province']) == strtoupper($state_skip)) {
-                        $location_state = '';
-                    } else {
-                        $location_state = ' ' . strtoupper($value['location_province']);
-                    }
-                    if (strtoupper($value['location_municipality']) == strtoupper($city_skip)){
-                        $value['location_municipality'] = '';
-                    }/*else{
+            foreach ($listResults as $value) {
+                if (strtoupper($value['location_province']) == strtoupper($state_skip)) {
+                    $location_state = '';
+                } else {
+                    $location_state = ' ' . strtoupper($value['location_province']);
+                }
+                if (strtoupper($value['location_municipality']) == strtoupper($city_skip)) {
+                    $value['location_municipality'] = '';
+                }/*else{
                         $location_municipality = ' ' . strtoupper($value['location_municipality']);
                     }*/
-                    if ($list == 'town') {
-                        if ($value['location_municipality'] != '') {
-                            $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_municipality']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_municipality'])));
-                            array_push($unique_city, $finalResult);
-                        }
-                    } else if ($list == 'county') {
-                        if ($value['location_sub_province'] != '') {
-                            $finalResult = $state == "1" ? str_replace(' County', '', trim(ucfirst($value['location_sub_province']))) . str_replace('.', '', $location_state) : str_replace(' County', '', trim(ucfirst($value['location_sub_province'])));
-                            array_push($unique_city, $finalResult);
-                        }
-                    } else if ($list == 'borough') {
-                        if ($value['location_city_subsection'] != '') {
-                            $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_city_subsection']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_city_subsection'])));
-                            array_push($unique_city, $finalResult);
-                        }
-                    } else if ($list == 'neighborhood') {
-                        if ($value['location_neighborhood'] != '') {
-                            $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_neighborhood']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_neighborhood'])));
-                            array_push($unique_city, $finalResult);
-                        }
-                    } else {
-                        return '<p><strong>List Locations Error: List attribute incorrect. Please Verify you have entered either town or county.</strong></p>';
+                if ($list == 'town') {
+                    if ($value['location_municipality'] != '') {
+                        $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_municipality']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_municipality'])));
+                        array_push($unique_city, $finalResult);
                     }
+                } else if ($list == 'county') {
+                    if ($value['location_sub_province'] != '') {
+                        $finalResult = $state == "1" ? str_replace(' County', '', trim(ucfirst($value['location_sub_province']))) . str_replace('.', '', $location_state) : str_replace(' County', '', trim(ucfirst($value['location_sub_province'])));
+                        array_push($unique_city, $finalResult);
+                    }
+                } else if ($list == 'borough') {
+                    if ($value['location_city_subsection'] != '') {
+                        $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_city_subsection']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_city_subsection'])));
+                        array_push($unique_city, $finalResult);
+                    }
+                } else if ($list == 'neighborhood') {
+                    if ($value['location_neighborhood'] != '') {
+                        $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_neighborhood']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_neighborhood'])));
+                        array_push($unique_city, $finalResult);
+                    }
+                } else {
+                    return '<p><strong>List Locations Error: List attribute incorrect. Please Verify you have entered either town or county.</strong></p>';
+                }
             }
             $unique_city = array_unique($unique_city);
             asort($unique_city);
@@ -200,49 +205,53 @@ if (!class_exists("ListLocations")) {
         /**
          * @desc Adds the options sub-panel
          */
-        function get_areas($root_server) {
-                $results = wp_remote_get("$root_server/client_interface/json/?switcher=GetServiceBodies", ListLocations::http_retrieve_args);
+        public function getAreas($root_server)
+        {
+                $results = wp_remote_get("$root_server/client_interface/json/?switcher=GetServiceBodies", ListLocations::HTTP_RETRIEVE_ARGS);
                 $result = json_decode(wp_remote_retrieve_body($results), true);
-                if (is_wp_error($results) ) {
-                    echo '<div style="font-size: 20px;text-align:center;font-weight:normal;color:#F00;margin:0 auto;margin-top: 30px;"><p>Problem Connecting to BMLT Root Server</p><p>' . $root_server . '</p><p>Error: ' . $result->get_error_message() . '</p><p>Please try again later</p></div>';
-                    return 0;
-                }
+            if (is_wp_error($results)) {
+                echo '<div style="font-size: 20px;text-align:center;font-weight:normal;color:#F00;margin:0 auto;margin-top: 30px;"><p>Problem Connecting to BMLT Root Server</p><p>' . $root_server . '</p><p>Error: ' . $result->get_error_message() . '</p><p>Please try again later</p></div>';
+                return 0;
+            }
 
                 $unique_areas = array();
-                foreach ($result as $value) {
-                    $parent_name = 'None';
-                    foreach ($result as $parent) {
-                        if ( $value['parent_id'] == $parent['id'] ) {
-                            $parent_name = $parent['name'];
-                        }
+            foreach ($result as $value) {
+                $parent_name = 'None';
+                foreach ($result as $parent) {
+                    if ($value['parent_id'] == $parent['id']) {
+                        $parent_name = $parent['name'];
                     }
-                    $unique_areas[] = $value['name'] . ',' . $value['id'] . ',' . $value['parent_id'] . ',' . $parent_name;
                 }
+                $unique_areas[] = $value['name'] . ',' . $value['id'] . ',' . $value['parent_id'] . ',' . $parent_name;
+            }
             return $unique_areas;
         }
 
-        function admin_menu_link() {
-            // If you change this from add_options_page, MAKE SURE you change the filter_plugin_actions function (below) to
+        public function adminMenuLink()
+        {
+            // If you change this from add_options_page, MAKE SURE you change the filterPluginActions function (below) to
             // reflect the page file name (i.e. - options-general.php) of the page your plugin is under!
             add_options_page('List Locations BMLT', 'List Locations BMLT', 'activate_plugins', basename(__FILE__), array(
                 &$this,
-                'admin_options_page'
+                'adminOptionsPage'
             ));
             add_filter('plugin_action_links_' . plugin_basename(__FILE__), array(
                 &$this,
-                'filter_plugin_actions'
+                'filterPluginActions'
             ), 10, 2);
         }
         /**
          * Adds settings/options page
          */
-        function admin_options_page() {
+        public function adminOptionsPage()
+        {
             if (!isset($_POST['listlocationssave'])) {
                 $_POST['listlocationssave'] = false;
             }
             if ($_POST['listlocationssave']) {
-                if (!wp_verify_nonce($_POST['_wpnonce'], 'listlocationsupdate-options'))
+                if (!wp_verify_nonce($_POST['_wpnonce'], 'listlocationsupdate-options')) {
                     die('Whoops! There was a problem with the data you posted. Please go back and try again.');
+                }
                 $this->options['root_server']            = esc_url_raw($_POST['root_server']);
                 $this->options['service_body_dropdown']  = sanitize_text_field($_POST['service_body_dropdown']);
                 $this->options['recursive']              = sanitize_text_field($_POST['recursive']);
@@ -251,17 +260,17 @@ if (!class_exists("ListLocations")) {
                 $this->options['list_select']            = sanitize_text_field($_POST['list_select']);
                 $this->options['state_skip_dropdown']    = sanitize_text_field($_POST['state_skip_dropdown']);
                 $this->options['city_skip_dropdown']     = sanitize_text_field($_POST['city_skip_dropdown']);
-                $this->save_admin_options();
+                $this->saveAdminOptions();
                 echo '<div class="updated"><p>Success! Your changes were successfully saved!</p></div>';
             }
-?>
+            ?>
             <div class="wrap">
                 <h2>List Locations BMLT</h2>
                 <form style="display:inline!important;" method="POST" id="list_locations_options" name="list_locations_options">
                     <?php wp_nonce_field('listlocationsupdate-options'); ?>
                     <?php $this_connected = $this->testRootServer($this->options['root_server']); ?>
                     <?php $connect = "<p><div style='color: #f00;font-size: 16px;vertical-align: text-top;' class='dashicons dashicons-no'></div><span style='color: #f00;'>Connection to Root Server Failed.  Check spelling or try again.  If you are certain spelling is correct, Root Server could be down.</span></p>"; ?>
-                    <?php if ( $this_connected != false) { ?>
+                    <?php if ($this_connected != false) { ?>
                         <?php $connect = "<span style='color: #00AD00;'><div style='font-size: 16px;vertical-align: text-top;' class='dashicons dashicons-smiley'></div>Version ".$this_connected."</span>"?>
                         <?php $this_connected = true; ?>
                     <?php } ?>
@@ -283,7 +292,7 @@ if (!class_exists("ListLocations")) {
                                 <label for="service_body_dropdown">Default Service Body: </label>
                                 <select style="display:inline;" onchange="getListLocationsValueSelected()" id="service_body_dropdown" name="service_body_dropdown"  class="list_locations_service_body_select">
                                 <?php if ($this_connected) { ?>
-                                    <?php $unique_areas = $this->get_areas($this->options['root_server']); ?>
+                                    <?php $unique_areas = $this->getAreas($this->options['root_server']); ?>
                                     <?php asort($unique_areas); ?>
                                     <?php foreach ($unique_areas as $key => $unique_area) { ?>
                                         <?php $area_data          = explode(',', $unique_area); ?>
@@ -292,8 +301,8 @@ if (!class_exists("ListLocations")) {
                                         <?php $area_parent        = $area_data[2]; ?>
                                         <?php $area_parent_name   = $area_data[3]; ?>
                                         <?php $option_description = $area_name . " (" . $area_id . ") " . $area_parent_name . " (" . $area_parent . ")" ?></option>
-                                        <?php $is_data = explode(',',esc_html($this->options['service_body_dropdown'])); ?>
-                                        <?php if ( $area_id == $is_data[1] ) { ?>
+                                        <?php $is_data = explode(',', esc_html($this->options['service_body_dropdown'])); ?>
+                                        <?php if ($area_id == $is_data[1]) { ?>
                                             <option selected="selected" value="<?php echo $unique_area; ?>"><?php echo $option_description; ?></option>
                                         <?php } else { ?>
                                             <option value="<?php echo $unique_area; ?>"><?php echo $option_description; ?></option>
@@ -370,14 +379,14 @@ if (!class_exists("ListLocations")) {
                                     <option value="county">County</option>
                                     <option value="borough">Borough</option>
                                     <option selected="selected" value="neighborhood">Neighborhood</option>
-                               <?php } else { ?>
+                                <?php } else { ?>
                                     <option selected="selected" value="town">Town</option>
                                     <option value="county">County</option>
                                     <option value="borough">Borough</option>
                                     <option value="neighborhood">Neighborhood</option>
-                                <?php
+                                    <?php
                                 }
-                                    ?>
+                                ?>
                                 </select>
                             </li>
                             <li>
@@ -398,7 +407,8 @@ if (!class_exists("ListLocations")) {
         /**
          * @desc Adds the Settings link to the plugin activate/deactivate page
          */
-        function filter_plugin_actions($links, $file) {
+        public function filterPluginActions($links, $file)
+        {
             // If your plugin is under a different top-level menu than Settings (IE - you changed the function above to something other than add_options_page)
             // Then you're going to want to change options-general.php below to the name of your top-level page
             $settings_link = '<a href="options-general.php?page=' . basename(__FILE__) . '">' . __('Settings') . '</a>';
@@ -410,7 +420,8 @@ if (!class_exists("ListLocations")) {
          * Retrieves the plugin options from the database.
          * @return array
          */
-        function getOptions() {
+        public function getOptions()
+        {
             // Don't forget to set up the default options
             if (!$theOptions = get_option($this->optionsName)) {
                 $theOptions = array(
@@ -431,7 +442,8 @@ if (!class_exists("ListLocations")) {
         /**
          * Saves the admin options to the database.
          */
-        function save_admin_options() {
+        public function saveAdminOptions()
+        {
             $this->options['root_server'] = untrailingslashit(preg_replace('/^(.*)\/(.*php)$/', '$1', $this->options['root_server']));
             update_option($this->optionsName, $this->options);
             return;
@@ -480,9 +492,9 @@ if (!class_exists("ListLocations")) {
 
             $listResults = json_decode($listUrl, true);
             $unique_states = array();
-            foreach($listResults as $value) {
+            foreach ($listResults as $value) {
                 if ($value['location_province'] != '') {
-                    $unique_states[] .= str_replace ( '.', '', strtoupper($value['location_province']));
+                    $unique_states[] .= str_replace('.', '', strtoupper($value['location_province']));
                 }
             }
             $unique_states = array_unique($unique_states);
@@ -491,7 +503,8 @@ if (!class_exists("ListLocations")) {
             return $unique_states;
         }
 
-        public function getCityList($root_server, $services, $recursive) {
+        public function getCityList($root_server, $services, $recursive)
+        {
             $serviceBodies = explode(',', $services);
             $services_query = '';
             foreach ($servicesbodies as $servicebody) {
@@ -504,9 +517,9 @@ if (!class_exists("ListLocations")) {
 
             $listResults = json_decode($listUrl, true);
             $unique_cities = array();
-            foreach($listResults as $value) {
+            foreach ($listResults as $value) {
                 if ($value['location_municipality'] != '') {
-                    $unique_cities[] .= str_replace ( '.', '', strtoupper($value['location_municipality']));
+                    $unique_cities[] .= str_replace('.', '', strtoupper($value['location_municipality']));
                 }
             }
             $unique_cities = array_unique($unique_cities);
