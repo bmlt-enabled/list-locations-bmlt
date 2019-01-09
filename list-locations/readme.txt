@@ -1,12 +1,12 @@
 === List Locations BMLT ===
 
-Contributors: pjaudiomv
+Contributors: pjaudiomv, klgrimley
 Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Tags: bmlt, basic meeting list toolbox, List Locations, List Locations bmlt, narcotics anonymous, na
 Requires at least: 4.0
 Requires PHP: 5.6
-Tested up to: 4.9.8
-Stable tag: 2.1.0
+Tested up to: 5.0.2
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ List Locations BMLT is a plugin that returns all unique towns or counties from y
 
 SHORTCODE
 Basic: [list_locations]
-Attributes: root_server, services, recursive, state, delimiter, list, state_skip
+Attributes: root_server, services, recursive, state, delimiter, list, state_skip, city_skip
 
 -- Shortcode parameters can be combined
 
@@ -34,6 +34,9 @@ Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; s
 
 **State Skip:** to skip the inclusion of a state when using state=&quot;1&quot; add state_skip=&quot;NC&quot;
 Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; services=&quot;50&quot; state=&quot;1&quot; state_skip=&quot;NC&quot;]
+
+**City Skip** To skip the inclusion of a city add city_skip=&quot;Indianapolis&quot;. This can be useful when mentioning a city out of order or in a different part of the text.
+Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; services=&quot;50&quot; state=&quot;1&quot; city_skip=&quot;Indianapolis&quot;]
 
 **Services:** to add multiple service bodies just seperate by a comma.
 Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; services=&quot;50,37,26&quot;]
@@ -72,6 +75,11 @@ This section describes how to install the plugin and get it working.
 1. screenshot-1.png
 
 == Changelog ==
+
+= 2.1.1 =
+
+* Added Support for Skipping a city using city_skip attribute.
+* Code cleanup.
 
 = 2.1.0 =
 

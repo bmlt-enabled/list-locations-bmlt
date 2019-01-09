@@ -5,7 +5,7 @@ List Locations BMLT is a plugin that returns all unique towns or counties from y
 # SHORTCODE
 **Basic:** `[list_locations root_server="https://www.domain.org/main_server" services="12"]`
 
-**Attributes:** root_server, services, recursive, state, delimiter, list, state_skip
+**Attributes:** root_server, services, recursive, state, delimiter, list, state_skip, city_skip
 
 -- Shortcode parameters can be combined.
 
@@ -26,6 +26,10 @@ A minimum of root_server and services attribute are required, which would return
 **State Skip:** to skip the inclusion of a state when using `state="1"` add `state_skip="NC"`
 
 `Ex. [list_locations root_server="https://www.domain.org/main_server" services="50" state="1" state_skip="NC"]`
+
+**City Skip:** to skip the inclusion of a city add `city_skip="Indianapolis"` This can be useful when mentioning a city out of order or in a different part of the text.
+
+`Ex. [list_locations root_server="https://www.domain.org/main_server" services="50" state="1" city_skip="Indianapolis"]`
 
 **Services:** to add multiple service bodies just seperate by a comma.
 
@@ -62,6 +66,10 @@ This section describes how to install the plugin and get it working.
 
 # Changelog
 
+= 2.1.1 =
+
+* Added Support for Skipping a city using city_skip attribute.
+* Code cleanup.
 
 = 2.1.0 =
 

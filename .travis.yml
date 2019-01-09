@@ -25,7 +25,7 @@ jobs:
     script:
     - find ./ -type d | xargs chmod 755
     - find ./ -name '*.php' | xargs chmod 644
-    - zip -r $ZIP_FILENAME list-locations-bmlt && mkdir $BUILD_DIR && mv $ZIP_FILENAME $BUILD_DIR/
+    - zip -r $ZIP_FILENAME list-locations && mkdir $BUILD_DIR && mv $ZIP_FILENAME $BUILD_DIR/
     before_deploy:
     - chmod +x travis/deploy-wordpress.sh
     - mkdir -p $DIST_DIR_S3 && cp $BUILD_DIR/$ZIP_FILENAME $DIST_DIR_S3/$ZIP_FILENAME
