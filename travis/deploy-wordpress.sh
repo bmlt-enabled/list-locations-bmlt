@@ -10,7 +10,7 @@ if [[ -z "$WORDPRESS_PASSWORD" ]]; then
 	exit 1
 fi
 
-PLUGIN="list-locations-bmlt"
+PLUGIN="list-locations"
 MAINFILE="list-locations.php"
 PROJECT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 PLUGIN_BUILDS_PATH="$PROJECT_ROOT/build-wp"
