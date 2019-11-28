@@ -4,7 +4,7 @@ Plugin Name: List Locations BMLT
 Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Author: pjaudiomv
 Description: This plugin returns all unique towns or counties for given service body on your site Simply add [list_locations] shortcode to your page and set shortcode attributes accordingly. Required attributes are root_server and services.
-Version: 2.1.1
+Version: 2.1.2
 Install: Drop this directory into the "wp-content/plugins/" directory and activate it.
 */
 /* Disallow direct access to the plugin file */
@@ -174,22 +174,22 @@ if (!class_exists("ListLocations")) {
                     }*/
                 if ($list == 'town') {
                     if ($value['location_municipality'] != '') {
-                        $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_municipality']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_municipality'])));
+                        $finalResult = $state == "1" ? str_replace(',', '', trim(ucwords($value['location_municipality']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucwords($value['location_municipality'])));
                         array_push($unique_city, $finalResult);
                     }
                 } else if ($list == 'county') {
                     if ($value['location_sub_province'] != '') {
-                        $finalResult = $state == "1" ? str_replace(' County', '', trim(ucfirst($value['location_sub_province']))) . str_replace('.', '', $location_state) : str_replace(' County', '', trim(ucfirst($value['location_sub_province'])));
+                        $finalResult = $state == "1" ? str_replace(' County', '', trim(ucwords($value['location_sub_province']))) . str_replace('.', '', $location_state) : str_replace(' County', '', trim(ucwords($value['location_sub_province'])));
                         array_push($unique_city, $finalResult);
                     }
                 } else if ($list == 'borough') {
                     if ($value['location_city_subsection'] != '') {
-                        $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_city_subsection']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_city_subsection'])));
+                        $finalResult = $state == "1" ? str_replace(',', '', trim(ucwords($value['location_city_subsection']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucwords($value['location_city_subsection'])));
                         array_push($unique_city, $finalResult);
                     }
                 } else if ($list == 'neighborhood') {
                     if ($value['location_neighborhood'] != '') {
-                        $finalResult = $state == "1" ? str_replace(',', '', trim(ucfirst($value['location_neighborhood']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucfirst($value['location_neighborhood'])));
+                        $finalResult = $state == "1" ? str_replace(',', '', trim(ucwords($value['location_neighborhood']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucwords($value['location_neighborhood'])));
                         array_push($unique_city, $finalResult);
                     }
                 } else {
@@ -204,6 +204,8 @@ if (!class_exists("ListLocations")) {
 
         /**
          * @desc Adds the options sub-panel
+         * @param $root_server
+         * @return array|int
          */
         public function getAreas($root_server)
         {
@@ -300,7 +302,7 @@ if (!class_exists("ListLocations")) {
                                         <?php $area_id            = $area_data[1]; ?>
                                         <?php $area_parent        = $area_data[2]; ?>
                                         <?php $area_parent_name   = $area_data[3]; ?>
-                                        <?php $option_description = $area_name . " (" . $area_id . ") " . $area_parent_name . " (" . $area_parent . ")" ?></option>
+                                        <?php $option_description = $area_name . " (" . $area_id . ") " . $area_parent_name . " (" . $area_parent . ")" ?>
                                         <?php $is_data = explode(',', esc_html($this->options['service_body_dropdown'])); ?>
                                         <?php if ($area_id == $is_data[1]) { ?>
                                             <option selected="selected" value="<?php echo $unique_area; ?>"><?php echo $option_description; ?></option>
@@ -406,6 +408,9 @@ if (!class_exists("ListLocations")) {
 
         /**
          * @desc Adds the Settings link to the plugin activate/deactivate page
+         * @param $links
+         * @param $file
+         * @return mixed
          */
         public function filterPluginActions($links, $file)
         {
@@ -416,10 +421,7 @@ if (!class_exists("ListLocations")) {
             // before other links
             return $links;
         }
-        /**
-         * Retrieves the plugin options from the database.
-         * @return array
-         */
+
         public function getOptions()
         {
             // Don't forget to set up the default options
@@ -475,7 +477,7 @@ if (!class_exists("ListLocations")) {
          * @param $root_server
          * @param $services
          * @param $recursive
-         * @return string
+         * @return array
          */
         public function getStateList($root_server, $services, $recursive)
         {
@@ -494,7 +496,7 @@ if (!class_exists("ListLocations")) {
             $unique_states = array();
             foreach ($listResults as $value) {
                 if ($value['location_province'] != '') {
-                    $unique_states[] .= str_replace('.', '', strtoupper($value['location_province']));
+                    $unique_states[] .= str_replace('.', '', strtoupper(trim($value['location_province'])));
                 }
             }
             $unique_states = array_unique($unique_states);
@@ -507,7 +509,7 @@ if (!class_exists("ListLocations")) {
         {
             $serviceBodies = explode(',', $services);
             $services_query = '';
-            foreach ($servicesbodies as $servicebody) {
+            foreach ($serviceBodies as $serviceBody) {
                 $services_query .= '&services[]=' .$serviceBody;
             }
             $listUrl = wp_remote_retrieve_body(wp_remote_get($root_server . "/client_interface/json/?switcher=GetSearchResults"
