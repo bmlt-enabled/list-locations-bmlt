@@ -2,9 +2,9 @@
 /*
 Plugin Name: List Locations BMLT
 Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
-Author: pjaudiomv
+Author: BMLT Authors
 Description: This plugin returns all unique towns or counties for given service body on your site Simply add [list_locations] shortcode to your page and set shortcode attributes accordingly. Required attributes are root_server and services.
-Version: 2.1.2
+Version: 2.1.3
 Install: Drop this directory into the "wp-content/plugins/" directory and activate it.
 */
 /* Disallow direct access to the plugin file */
@@ -124,28 +124,31 @@ if (!class_exists("ListLocations")) {
         {
         // phpcs:enable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
             global $unique_areas;
-            extract(shortcode_atts(array(
-                "root_server" => '',
-                'services'    =>  '',
-                'recursive'   => '',
-                'state'       => '',
-                'delimiter'   => '',
-                'list'        => '',
-                'state_skip'  => '',
-                'city_skip'   => ''
-            ), $atts));
+            $args = shortcode_atts(
+                array(
+                    "root_server" => '',
+                    'services'    =>  '',
+                    'recursive'   => '',
+                    'state'       => '',
+                    'delimiter'   => '',
+                    'list'        => '',
+                    'state_skip'  => '',
+                    'city_skip'   => ''
+                ),
+                $atts
+            );
 
             $area_data_dropdown   = explode(',', $this->options['service_body_dropdown']);
             $services_dropdown    = $area_data_dropdown[1];
 
-            $root_server          = ($root_server != '' ? $root_server : $this->options['root_server']);
-            $services             = ($services    != '' ? $services    : $services_dropdown);
-            $recursive            = ($recursive   != '' ? $recursive   : $this->options['recursive']);
-            $state                = ($state       != '' ? $state       : $this->options['state_checkbox']);
-            $delimiter            = ($delimiter   != '' ? $delimiter   : $this->options['delimiter_textbox']);
-            $list                 = ($list        != '' ? $list        : $this->options['list_select']);
-            $state_skip           = ($state_skip  != '' ? $state_skip  : $this->options['state_skip_dropdown']);
-            $city_skip            = ($city_skip   != '' ? $city_skip   : $this->options['city_skip_dropdown']);
+            $root_server          = ($args['root_server'] != '' ? $args['root_server'] : $this->options['root_server']);
+            $services             = ($args['services']    != '' ? $args['services']    : $services_dropdown);
+            $recursive            = ($args['recursive']   != '' ? $args['recursive']   : $this->options['recursive']);
+            $state                = ($args['state']       != '' ? $args['state']       : $this->options['state_checkbox']);
+            $delimiter            = ($args['delimiter']   != '' ? $args['delimiter']   : $this->options['delimiter_textbox']);
+            $list                 = ($args['list']        != '' ? $args['list']        : $this->options['list_select']);
+            $state_skip           = ($args['state_skip']  != '' ? $args['state_skip']  : $this->options['state_skip_dropdown']);
+            $city_skip            = ($args['city_skip']   != '' ? $args['city_skip']   : $this->options['city_skip_dropdown']);
 
             if ($delimiter == '' && $this->options['delimiter_textbox'] == '') {
                 $delimiter = ', ';
