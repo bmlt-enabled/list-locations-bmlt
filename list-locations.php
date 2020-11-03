@@ -182,17 +182,17 @@ if (!class_exists("ListLocations")) {
                         $finalResult = $state == "1" ? str_replace(',', '', trim(ucwords($value['location_municipality']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucwords($value['location_municipality'])));
                         array_push($unique_city, $finalResult);
                     }
-                } else if ($list == 'county') {
+                } elseif ($list == 'county') {
                     if ($value['location_sub_province'] != '') {
                         $finalResult = $state == "1" ? str_replace(' County', '', trim(ucwords($value['location_sub_province']))) . str_replace('.', '', $location_state) : str_replace(' County', '', trim(ucwords($value['location_sub_province'])));
                         array_push($unique_city, $finalResult);
                     }
-                } else if ($list == 'borough') {
+                } elseif ($list == 'borough') {
                     if ($value['location_city_subsection'] != '') {
                         $finalResult = $state == "1" ? str_replace(',', '', trim(ucwords($value['location_city_subsection']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucwords($value['location_city_subsection'])));
                         array_push($unique_city, $finalResult);
                     }
-                } else if ($list == 'neighborhood') {
+                } elseif ($list == 'neighborhood') {
                     if ($value['location_neighborhood'] != '') {
                         $finalResult = $state == "1" ? str_replace(',', '', trim(ucwords($value['location_neighborhood']))) . str_replace('.', '', $location_state) : str_replace(',', '', trim(ucwords($value['location_neighborhood'])));
                         array_push($unique_city, $finalResult);
@@ -377,12 +377,12 @@ if (!class_exists("ListLocations")) {
                                     <option selected="selected" value="county">County</option>
                                     <option value="borough">Borough</option>
                                     <option value="neighborhood">Neighborhood</option>
-                                <?php } else if ($this->options['list_select'] == 'borough') { ?>
+                                <?php } elseif ($this->options['list_select'] == 'borough') { ?>
                                     <option value="town">Town</option>
                                     <option value="county">County</option>
                                     <option selected="selected" value="borough">Borough</option>
                                     <option value="neighborhood">Neighborhood</option>
-                                <?php } else if ($this->options['list_select'] == 'neighborhood') { ?>
+                                <?php } elseif ($this->options['list_select'] == 'neighborhood') { ?>
                                     <option value="town">Town</option>
                                     <option value="county">County</option>
                                     <option value="borough">Borough</option>
@@ -478,7 +478,7 @@ if (!class_exists("ListLocations")) {
         {
 
             $serviceBodies = explode(',', $services);
-            if (isset($custom_query) && $custom_query != "" ) {
+            if (isset($custom_query) && $custom_query != "") {
                 $listUrl = wp_remote_retrieve_body(wp_remote_get($root_server . "/client_interface/json/?switcher=GetSearchResults" . $custom_query));
             } else {
                 $services_query = '';
