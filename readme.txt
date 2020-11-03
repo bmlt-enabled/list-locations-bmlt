@@ -5,8 +5,8 @@ Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Tags: bmlt, basic meeting list toolbox, List Locations, List Locations bmlt, narcotics anonymous, na
 Requires at least: 4.0
 Requires PHP: 5.6
-Tested up to: 5.4.0
-Stable tag: 2.1.3
+Tested up to: 5.5.3
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,9 @@ Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; d
 **List:** You can list by the following town, county, borough, neighborhood. The default is town.
 Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; list=&quot;town&quot;]
 
+**custom_query** You can add a custom query from semantic api to filter results, for ex by format `&formats=54`.
+Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; custom_query=&quot;&formats=54&quot;]
+
 == EXAMPLES ==
 
 <a href="https://www.crna.org/area-service-committees/">https://www.crna.org/area-service-committees/</a>
@@ -75,6 +78,10 @@ This section describes how to install the plugin and get it working.
 1. screenshot-1.png
 
 == Changelog ==
+
+= 2.2.0 =
+
+* Added option to specify a custom query.
 
 = 2.1.3 =
 

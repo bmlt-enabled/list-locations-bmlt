@@ -4,7 +4,7 @@ Plugin Name: List Locations BMLT
 Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Author: BMLT Authors
 Description: This plugin returns all unique towns or counties for given service body on your site Simply add [list_locations] shortcode to your page and set shortcode attributes accordingly. Required attributes are root_server and services.
-Version: 2.1.3
+Version: 2.2.0
 Install: Drop this directory into the "wp-content/plugins/" directory and activate it.
 */
 /* Disallow direct access to the plugin file */
@@ -126,14 +126,15 @@ if (!class_exists("ListLocations")) {
             global $unique_areas;
             $args = shortcode_atts(
                 array(
-                    "root_server" => '',
-                    'services'    =>  '',
-                    'recursive'   => '',
-                    'state'       => '',
-                    'delimiter'   => '',
-                    'list'        => '',
-                    'state_skip'  => '',
-                    'city_skip'   => ''
+                    "root_server"  => '',
+                    'services'     => '',
+                    'recursive'    => '',
+                    'state'        => '',
+                    'delimiter'    => '',
+                    'list'         => '',
+                    'state_skip'   => '',
+                    'city_skip'    => '',
+                    'custom_query' => ''
                 ),
                 $atts
             );
@@ -141,14 +142,15 @@ if (!class_exists("ListLocations")) {
             $area_data_dropdown   = explode(',', $this->options['service_body_dropdown']);
             $services_dropdown    = $area_data_dropdown[1];
 
-            $root_server          = ($args['root_server'] != '' ? $args['root_server'] : $this->options['root_server']);
-            $services             = ($args['services']    != '' ? $args['services']    : $services_dropdown);
-            $recursive            = ($args['recursive']   != '' ? $args['recursive']   : $this->options['recursive']);
-            $state                = ($args['state']       != '' ? $args['state']       : $this->options['state_checkbox']);
-            $delimiter            = ($args['delimiter']   != '' ? $args['delimiter']   : $this->options['delimiter_textbox']);
-            $list                 = ($args['list']        != '' ? $args['list']        : $this->options['list_select']);
-            $state_skip           = ($args['state_skip']  != '' ? $args['state_skip']  : $this->options['state_skip_dropdown']);
-            $city_skip            = ($args['city_skip']   != '' ? $args['city_skip']   : $this->options['city_skip_dropdown']);
+            $root_server          = ($args['root_server']  != '' ? $args['root_server']  : $this->options['root_server']);
+            $services             = ($args['services']     != '' ? $args['services']     : $services_dropdown);
+            $recursive            = ($args['recursive']    != '' ? $args['recursive']    : $this->options['recursive']);
+            $state                = ($args['state']        != '' ? $args['state']        : $this->options['state_checkbox']);
+            $delimiter            = ($args['delimiter']    != '' ? $args['delimiter']    : $this->options['delimiter_textbox']);
+            $list                 = ($args['list']         != '' ? $args['list']         : $this->options['list_select']);
+            $state_skip           = ($args['state_skip']   != '' ? $args['state_skip']   : $this->options['state_skip_dropdown']);
+            $city_skip            = ($args['city_skip']    != '' ? $args['city_skip']    : $this->options['city_skip_dropdown']);
+            $custom_query         = ($args['custom_query'] != '' ? $args['custom_query'] : $this->options['custom_query']);
 
             if ($delimiter == '' && $this->options['delimiter_textbox'] == '') {
                 $delimiter = ', ';
@@ -161,7 +163,7 @@ if (!class_exists("ListLocations")) {
                 return '<p><strong>List Locations Error: Services missing. Please verify you have entered a service body id using the \'services\' shortcode attribute</strong></p>';
             }
 
-            $listResults = json_decode($this->getListResults($root_server, $services, $recursive), true);
+            $listResults = json_decode($this->getListResults($root_server, $services, $recursive, $custom_query), true);
             $unique_city = array();
 
             foreach ($listResults as $value) {
@@ -265,6 +267,7 @@ if (!class_exists("ListLocations")) {
                 $this->options['list_select']            = sanitize_text_field($_POST['list_select']);
                 $this->options['state_skip_dropdown']    = sanitize_text_field($_POST['state_skip_dropdown']);
                 $this->options['city_skip_dropdown']     = sanitize_text_field($_POST['city_skip_dropdown']);
+                $this->options['custom_query']               = sanitize_text_field($_POST['custom_query']);
                 $this->saveAdminOptions();
                 echo '<div class="updated"><p>Success! Your changes were successfully saved!</p></div>';
             }
@@ -400,6 +403,15 @@ if (!class_exists("ListLocations")) {
                             </li>
                         </ul>
                     </div>
+                    <div style="padding: 0 15px;" class="postbox">
+                        <h3>Custom Query</h3>
+                        <p>Ex. &formats=54</p>
+                        <ul>
+                            <li>
+                                <input type="text" id="custom_query" name="custom_query" value="<?php echo $this->options['custom_query']; ?>">
+                            </li>
+                        </ul>
+                    </div>
                     <input type="submit" value="SAVE CHANGES" name="listlocationssave" class="button-primary" />
                 </form>
                 <br/><br/>
@@ -437,7 +449,8 @@ if (!class_exists("ListLocations")) {
                     'delimiter_textbox'     => ', ',
                     'list_select'           => 'town',
                     'state_skip_dropdown'   => '',
-                    'city_skip_dropdown'    => ''
+                    'city_skip_dropdown'    => '',
+                    'custom_query'          => ''
                 );
                 update_option($this->optionsName, $theOptions);
             }
@@ -458,21 +471,25 @@ if (!class_exists("ListLocations")) {
          * @param $root_server
          * @param $services
          * @param $recursive
+         * @param $custom_query
          * @return string
          */
-        public function getListResults($root_server, $services, $recursive)
+        public function getListResults($root_server, $services, $recursive, $custom_query)
         {
 
             $serviceBodies = explode(',', $services);
-            $services_query = '';
-            foreach ($serviceBodies as $serviceBody) {
-                $services_query .= '&services[]=' . $serviceBody;
+            if (isset($custom_query) && $custom_query != "" ) {
+                $listUrl = wp_remote_retrieve_body(wp_remote_get($root_server . "/client_interface/json/?switcher=GetSearchResults" . $custom_query));
+            } else {
+                $services_query = '';
+                foreach ($serviceBodies as $serviceBody) {
+                    $services_query .= '&services[]=' . $serviceBody;
+                }
+                $listUrl = wp_remote_retrieve_body(wp_remote_get($root_server . "/client_interface/json/?switcher=GetSearchResults"
+                    . $services_query
+                    . "&data_field_key=location_municipality,location_province,location_sub_province,location_city_subsection,location_neighborhood"
+                    . ($recursive == "1" ? "&recursive=1" : "")));
             }
-            $listUrl = wp_remote_retrieve_body(wp_remote_get($root_server . "/client_interface/json/?switcher=GetSearchResults"
-                . $services_query
-                . "&data_field_key=location_municipality,location_province,location_sub_province,location_city_subsection,location_neighborhood"
-                . ($recursive == "1" ? "&recursive=1" : "")));
-
             return $listUrl;
         }
 
