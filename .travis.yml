@@ -34,32 +34,37 @@ jobs:
     - curl -LO https://raw.githubusercontent.com/bmlt-enabled/bmlt-wordpress-deploy/master/deploy-wordpress.sh
     - chmod +x deploy-wordpress.sh
     deploy:
-    - provider: s3
-      access_key_id: AKIA3EWZC3OHKYCL5SIY
-      secret_access_key:
-        secure: nLJ9oR4Qy9hiugh2nPUeXo0qIK8SuK5jv4BZ/xO0qEU2KlCcSE0swOCA9CohDWg2po9c7loof6VXQ/8Smb009r4/RUyI5RfAvfhJxuBvVN7q53XvtWzjnJzn1FburXEDbjRC3uTdXoKa5+GUPtv6g9KFOLJu3y9VgecObngtP8+wRtIcTgx9kvPk/v4cKLss6+gBfvxvFoNz8P/nXVT7jJMsf/GVtaGXTJG95IVWeSsFLwtAp5+5cCyUdmfv5Wg/kpm0hLdK0o/hB8FqtGPwAEI6VF5kaH6+Kr9oyJAiYDvuzsdOTC6+h9C2Gd7B17+GT2+a2fFx8lL9aZ7byGqMT8ZUG2FbjxPg76HK1IXIA6TKqTBLQ0jrM85HSvI/WxgMvRnG8osrBhw9BW7H21IY+btYrBhT83kVT80R/YJ5yS0pytM25w0m6IvhxXdjZtkpONLtMKbzI7Wce2VaIkiY50EZfGdMte4WjPP7bNEbvHL+eMoWYdzmK6eGAWefQ1x1VIfKoB4lSO0svjvKybjZKuWEWXsYUxOC+sNjYQ6wYJUVBhpFKsjLI6J7TNNnM/NUBxS05DLfHzJh1cxCcnly8u0FMPfEazk27SA/VWrlfPiyC+gGvU8uovDPOnQsQSwUzRtHxBuoqFApRbXR04aBPvPQUK/qgC+cszryk+CIYsE=
-      bucket: "$S3_BUCKET"
-      local_dir: "$DIST_DIR_S3"
-      upload-dir: "$S3_KEY"
-      skip_cleanup: true
-      on:
-        all_branches: true
-    - provider: releases
-      api_key:
-        secure: hO9+/QLHuE+W9ApaBvjRdTDLq50IzuZ4K8jUK2gJUOltKxJSaIAgMprXFb3C56CpV0kvJzNFBfyBMb6v8zjF7lqxFiJ5L54XNEdSw9F41gpGXCeJqj+nXvAdVCdJAc0ccfwlfUFEp4wA9YjtmtvKukNif3/gk8aI44RAbjy6TDnMM/nkI2BegjE3XOP66cfxSB3aUA79mNNDma1q9HJ94r/sYsqIVYDkouQCbVNxAPQIAv4eVrlop7wsP5eEpOv8+VXZWPjJCSGl5vWMeBwectPEXWF4ZPy9Uz6XL3HgDppxcM5Wc+TUyfxX1dKwSKhzXbNILKMZPPRBI1e//0Xapb3WD8/rrcBohTEOIqKG7oU+G4RbdioAUd56PMYolBvF6s9vKlmQafdyAOB/hILdOIcL1NuqPjn9YddpZYv6MwTo56qd3HG1QC+BksQ4dhE6fUSf9KQmo2N2JgoL5W0Etqddaq9FippTIJ+I6XzBcxbSACgEC9IL0q5+rTQM0VCGj0hF3jybeXVvA0sdIjMu5jxqUvqwHZb05bZ1OtVQ3WCdV/7CaIYfMherHg0tu+ySIDPBP/q3eTbY22X17X8Dlx8lVMpsS06Cvb29aJDhyxtRCSmfjSRnyyM+YV8rpsWoKQY8+XXUCv9HB9uuE49dXzhq5ACvqzuzVGCVJTeA3yg=
-      file: "$DIST_DIR_GITHUB/$GITHUB_RELEASE_FILENAME"
-      skip_cleanup: true
-      name: "$TRAVIS_TAG"
-      on:
-        tags: true
-    - provider: script
-      script: ./deploy-wordpress.sh
-      skip_cleanup: true
-      on:
-        tags: true
-notifications:
-  slack:
-    rooms:
-    - secure: bmoIugz9sorNakDw7LnfC3iB7a4CnhuZeZBAVxefSoqipbZAGLoA86pSaDwSK3kNsCRAUXyHJ0pBxxJuCO5jrQKhl9TNBFQQ60KPvn3LQj9OXXTSHp4qoqBytipQGyjeqySu4fJt8Lc0u8FQ0qinxn21qF7K7c54aygVKQd+nxf/+9rVzSOJIY+c6UEBb9FwKfHl9cOJy8nTHYPNl0ZbQaYVS1gvyOV2jzrlurOXb0t2xYs2W9EOAjUd2E4ZVaD8EEyRZ9zcvy8ne41qZGBLMJjHZo6TdN4x0AdEYiITst5fKj+YILNCaVQMyURu5h65RPVXyjZ/eIOUixSt1EOpMTxWcRiDn3H7B2F7eEUIXyo/c5x1AEWEQFLGK+/PEqWx/zaBG0rJJdzVbLaqet2kg5piy+f84EBCZiXm7CZIYPMSjLJo9AJDcY9iSRgvpRnkSagHZAgMILNut53aNPd8i3FoOeycPwux/KDQpSz0uIpn4xu26VY0bzxJ8N27VugUhmNhLCN05Hgw8GoDjEoh4EgPPsdNVzXT4mzpjx2GfhRZOm/78LUSDB/w3oIAEPzRFfhberBAo0l2w9T5+Ynbw9yyquYgNUOW/nMhbwqOPbWqndHa8Xume0DXp2COHEqoSZx4gDIIRRKjKdsrFjjasWB5K7IQXQfBoiGAL7EscNA=
-    on_success: change
-  email: false
+      - provider: s3
+        access_key_id: AKIA3EWZC3OHKYCL5SIY
+        secret_access_key:
+          secure: nLJ9oR4Qy9hiugh2nPUeXo0qIK8SuK5jv4BZ/xO0qEU2KlCcSE0swOCA9CohDWg2po9c7loof6VXQ/8Smb009r4/RUyI5RfAvfhJxuBvVN7q53XvtWzjnJzn1FburXEDbjRC3uTdXoKa5+GUPtv6g9KFOLJu3y9VgecObngtP8+wRtIcTgx9kvPk/v4cKLss6+gBfvxvFoNz8P/nXVT7jJMsf/GVtaGXTJG95IVWeSsFLwtAp5+5cCyUdmfv5Wg/kpm0hLdK0o/hB8FqtGPwAEI6VF5kaH6+Kr9oyJAiYDvuzsdOTC6+h9C2Gd7B17+GT2+a2fFx8lL9aZ7byGqMT8ZUG2FbjxPg76HK1IXIA6TKqTBLQ0jrM85HSvI/WxgMvRnG8osrBhw9BW7H21IY+btYrBhT83kVT80R/YJ5yS0pytM25w0m6IvhxXdjZtkpONLtMKbzI7Wce2VaIkiY50EZfGdMte4WjPP7bNEbvHL+eMoWYdzmK6eGAWefQ1x1VIfKoB4lSO0svjvKybjZKuWEWXsYUxOC+sNjYQ6wYJUVBhpFKsjLI6J7TNNnM/NUBxS05DLfHzJh1cxCcnly8u0FMPfEazk27SA/VWrlfPiyC+gGvU8uovDPOnQsQSwUzRtHxBuoqFApRbXR04aBPvPQUK/qgC+cszryk+CIYsE=
+        bucket: "$S3_BUCKET"
+        local_dir: "$DIST_DIR_S3"
+        upload-dir: "$S3_KEY"
+        skip_cleanup: true
+        on:
+          all_branches: true
+      - provider: releases
+        edge: true
+        token:
+          secure: DgyOfJ9hf1001dzIO5om2X4dZG1Dc1NoY6rzxLUQ+teAUO7xWVKvr8rXW6cGme9Mf1VG+CFF2lP8iuY1jcCokh5czdxpBhegA0xqonvJp8V5/dtqAJu8aZicyE0Nt2AF+kwwEVxpQooak+Ti2gq3cJHXF+LlMC1xCX/hElNt6klATSRqQNuYMqpmYtURvao0MUGOhTfevW23raLSVjWWRcDl4ZTdf4TpGcG0pn+cbYi21KLK89oz4rJcVnZQVZDcnfwLbkqiWO+kzJIqua7m8PauHtf0D4hoV52epUhYQM8Z7UBPSUTrR/42yGu+lDN6T3BD9LFAcKII6BiCSJfQl34709dY1gzGAiGvG3LLY3W2pwzgN1JBwX3mgp0Y5gPnazZLAYMrmIcac7i7lxmX53w8cWDY1Gxek7AjSuPNHB6QgwT0JMF0PnMalduOZ7jv45VmDcNamr1SmJ6H2r/zy64i7QaI74UmZkJUJeh5uPfpts9ibP0AU++KEBnx/f0e1blfZa2xlis6GZMp6OXGyWrEJQs8SOlAD1BXC37IKkSIllR7vJWU8t//74EpOTFjqhr4SCDLzEYLoTnsA154PdX+1qxqftrsCY97fwX6LZn1sgwsm3VH7XzcjVggJPQQOw9s0ygaU5ykNnD21xBV1tKEptzJlIsnsGuLPfr8LQg=
+        file: "$DIST_DIR_GITHUB/$GITHUB_RELEASE_FILENAME"
+        name: "$TRAVIS_TAG"
+        prerelease: true
+        on:
+          tags: true
+          condition: $TRAVIS_TAG =~ "beta"
+      - provider: releases
+        edge: true
+        token:
+          secure: DgyOfJ9hf1001dzIO5om2X4dZG1Dc1NoY6rzxLUQ+teAUO7xWVKvr8rXW6cGme9Mf1VG+CFF2lP8iuY1jcCokh5czdxpBhegA0xqonvJp8V5/dtqAJu8aZicyE0Nt2AF+kwwEVxpQooak+Ti2gq3cJHXF+LlMC1xCX/hElNt6klATSRqQNuYMqpmYtURvao0MUGOhTfevW23raLSVjWWRcDl4ZTdf4TpGcG0pn+cbYi21KLK89oz4rJcVnZQVZDcnfwLbkqiWO+kzJIqua7m8PauHtf0D4hoV52epUhYQM8Z7UBPSUTrR/42yGu+lDN6T3BD9LFAcKII6BiCSJfQl34709dY1gzGAiGvG3LLY3W2pwzgN1JBwX3mgp0Y5gPnazZLAYMrmIcac7i7lxmX53w8cWDY1Gxek7AjSuPNHB6QgwT0JMF0PnMalduOZ7jv45VmDcNamr1SmJ6H2r/zy64i7QaI74UmZkJUJeh5uPfpts9ibP0AU++KEBnx/f0e1blfZa2xlis6GZMp6OXGyWrEJQs8SOlAD1BXC37IKkSIllR7vJWU8t//74EpOTFjqhr4SCDLzEYLoTnsA154PdX+1qxqftrsCY97fwX6LZn1sgwsm3VH7XzcjVggJPQQOw9s0ygaU5ykNnD21xBV1tKEptzJlIsnsGuLPfr8LQg=
+        file: "$DIST_DIR_GITHUB/$GITHUB_RELEASE_FILENAME"
+        name: "$TRAVIS_TAG"
+        on:
+          tags: true
+          condition: $TRAVIS_TAG != *beta*
+      - provider: script
+        edge: true
+        script: ./deploy-wordpress.sh
+        on:
+          tags: true
