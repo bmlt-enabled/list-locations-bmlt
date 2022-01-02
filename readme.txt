@@ -1,6 +1,6 @@
 === List Locations BMLT ===
 
-Contributors: pjaudiomv, klgrimley
+Contributors: pjaudiomv, klgrimley, bmltenabled
 Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Tags: bmlt, basic meeting list toolbox, List Locations, List Locations bmlt, narcotics anonymous, na
 Requires PHP: 5.6
