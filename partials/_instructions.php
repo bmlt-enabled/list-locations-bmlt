@@ -1,5 +1,5 @@
 <h2>Instructions</h2>
-<p> Please open a ticket <a href="https://github.com/pjaudiomv/list-locations-bmlt/issues" target="_top">https://github.com/pjaudiomv/list-locations-bmlt/issues</a> with problems, questions or comments.</p>
+<p> Please open a ticket <a href="https://github.com/bmlt-enabled/list-locations-bmlt/issues" target="_top">https://github.com/bmlt-enabled/list-locations-bmlt/issues</a> with problems, questions or comments.</p>
 <div id="list_locations_accordion">
     <h3 class="help-accordian"><strong>Basic</strong></h3>
     <div>
@@ -30,7 +30,7 @@
     <h3 class="help-accordian"><strong>&nbsp;&nbsp;&nbsp;&nbsp;- services</strong></h3>
     <div>
         <p><strong>services (required)</strong></p>
-        <p>The Service Body ID of the service body you would like to include, to add multiple service bodies just seperate by a comma..</p>
+        <p>The Service Body ID of the service body you would like to include, to add multiple service bodies just seperate by a comma.</p>
         <p>Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; services=&quot;50,37,26&quot;]</p>
     </div>
     <h3 class="help-accordian"><strong>&nbsp;&nbsp;&nbsp;&nbsp;- recursive</strong></h3>
