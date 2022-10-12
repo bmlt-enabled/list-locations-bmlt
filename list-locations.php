@@ -4,7 +4,7 @@ Plugin Name: List Locations BMLT
 Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Author: BMLT Authors
 Description: This plugin returns all unique towns or counties for given service body on your site Simply add [list_locations] shortcode to your page and set shortcode attributes accordingly. Required attributes are root_server and services.
-Version: 2.2.0
+Version: 2.2.1
 Install: Drop this directory into the "wp-content/plugins/" directory and activate it.
 */
 /* Disallow direct access to the plugin file */
@@ -21,7 +21,7 @@ if (!class_exists("ListLocations")) {
         public $options = array();
         const HTTP_RETRIEVE_ARGS = array(
             'headers' => array(
-                'User-Agent' => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +ListLocationsBMLT'
+                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0 +ListLocationsBMLT'
             ),
             'timeout' => 60
         );
