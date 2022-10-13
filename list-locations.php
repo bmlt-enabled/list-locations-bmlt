@@ -348,7 +348,7 @@ if (!class_exists("ListLocations")) {
                                     <option value=""></option>
                                     <?php
                                     $service_body_cities_area          = explode(',', $this->options['service_body_dropdown']);
-                                    $service_body_cities               = $service_body_cities_area[1];
+                                    $service_body_cities               = isset($service_body_cities_area) && is_array($service_body_cities_area) && count($service_body_cities_area) > 0 ? $service_body_cities_area[1] : '';
                                     $service_body_cities_dropdown      = $this->getCityList($this->options['root_server'], $service_body_states, $this->options['recursive']);
                                     foreach ($service_body_cities_dropdown as $key => $unique_city) {
                                         if ($unique_city == $this->options['city_skip_dropdown']) { ?>
