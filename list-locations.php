@@ -297,7 +297,9 @@ if (!class_exists("ListLocations")) {
                                         <?php $area_parent        = $area_data[2]; ?>
                                         <?php $area_parent_name   = $area_data[3]; ?>
                                         <?php $option_description = $area_name . " (" . $area_id . ") " . $area_parent_name . " (" . $area_parent . ")" ?>
-                                        <?php $is_data = explode(',', esc_html($this->options['service_body_dropdown'])); ?>
+                                        <?php $is_data = explode(',', esc_html($this->options['service_body_dropdown']));
+                                        $is_data_check = isset($is_data) && is_array($is_data) && count($is_data) > 0 ? $is_data[1] : '';
+                                        ?>
                                         <?php if ($area_id == $is_data[1]) { ?>
                                             <option selected="selected" value="<?php echo $unique_area; ?>"><?php echo $option_description; ?></option>
                                         <?php } else { ?>
@@ -329,7 +331,7 @@ if (!class_exists("ListLocations")) {
                                     <option value=""></option>
                                     <?php
                                     $service_body_states_area          = explode(',', $this->options['service_body_dropdown']);
-                                    $service_body_states               = $service_body_states_area[1];
+                                    $service_body_states              = isset($service_body_states_area) && is_array($service_body_states_area) && count($service_body_states_area) > 0 ? $service_body_states_area[1] : '';
                                     $service_body_states_dropdown      = $this->getStateList($this->options['root_server'], $service_body_states, $this->options['recursive']);
                                     foreach ($service_body_states_dropdown as $key => $unique_state) {
                                         if ($unique_state == $this->options['state_skip_dropdown']) { ?>
