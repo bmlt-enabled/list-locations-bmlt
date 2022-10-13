@@ -4,7 +4,7 @@ Plugin Name: List Locations BMLT
 Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Author: BMLT Authors
 Description: This plugin returns all unique towns or counties for given service body on your site Simply add [list_locations] shortcode to your page and set shortcode attributes accordingly. Required attributes are root_server and services.
-Version: 2.2.1
+Version: 2.2.2
 Install: Drop this directory into the "wp-content/plugins/" directory and activate it.
 */
 /* Disallow direct access to the plugin file */
@@ -107,7 +107,12 @@ if (!class_exists("ListLocations")) {
                 return false;
             };
             $results = json_decode(wp_remote_retrieve_body($results), true);
-            return $results[0]["version"];
+            return is_array($results) && array_key_exists("version", $results[0]) ? $results[0]["version"] : '';
+        }
+
+        public function arraySafeGet($arr, $i = 0)
+        {
+            return is_array($arr) ? $arr[$i] ?? '': '';
         }
 
         // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
@@ -130,7 +135,7 @@ if (!class_exists("ListLocations")) {
             );
 
             $area_data_dropdown   = explode(',', $this->options['service_body_dropdown']);
-            $services_dropdown    = $area_data_dropdown[1];
+            $services_dropdown    = $this->arraySafeGet($area_data_dropdown, 1);
 
             $root_server          = ($args['root_server'] != '' ? $args['root_server'] : $this->options['root_server']);
             $services             = ($args['services']    != '' ? $args['services']    : $services_dropdown);
@@ -292,15 +297,14 @@ if (!class_exists("ListLocations")) {
                                     <?php asort($unique_areas); ?>
                                     <?php foreach ($unique_areas as $key => $unique_area) { ?>
                                         <?php $area_data          = explode(',', $unique_area); ?>
-                                        <?php $area_name          = $area_data[0]; ?>
-                                        <?php $area_id            = $area_data[1]; ?>
-                                        <?php $area_parent        = $area_data[2]; ?>
-                                        <?php $area_parent_name   = $area_data[3]; ?>
+                                        <?php $area_name          = $this->arraySafeGet($area_data); ?>
+                                        <?php $area_id            = $this->arraySafeGet($area_data, 1); ?>
+                                        <?php $area_parent        = $this->arraySafeGet($area_data, 2); ?>
+                                        <?php $area_parent_name   = $this->arraySafeGet($area_data, 3); ?>
                                         <?php $option_description = $area_name . " (" . $area_id . ") " . $area_parent_name . " (" . $area_parent . ")" ?>
                                         <?php $is_data = explode(',', esc_html($this->options['service_body_dropdown']));
-                                        $is_data_check = isset($is_data) && is_array($is_data) && count($is_data) > 0 ? $is_data[1] : '';
                                         ?>
-                                        <?php if ($area_id == $is_data[1]) { ?>
+                                        <?php if ($area_id == $this->arraySafeGet($is_data, 1)) { ?>
                                             <option selected="selected" value="<?php echo $unique_area; ?>"><?php echo $option_description; ?></option>
                                         <?php } else { ?>
                                             <option value="<?php echo $unique_area; ?>"><?php echo $option_description; ?></option>
@@ -331,7 +335,7 @@ if (!class_exists("ListLocations")) {
                                     <option value=""></option>
                                     <?php
                                     $service_body_states_area          = explode(',', $this->options['service_body_dropdown']);
-                                    $service_body_states              = isset($service_body_states_area) && is_array($service_body_states_area) && count($service_body_states_area) > 0 ? $service_body_states_area[1] : '';
+                                    $service_body_states               = $this->arraySafeGet($service_body_states_area, 1);
                                     $service_body_states_dropdown      = $this->getStateList($this->options['root_server'], $service_body_states, $this->options['recursive']);
                                     foreach ($service_body_states_dropdown as $key => $unique_state) {
                                         if ($unique_state == $this->options['state_skip_dropdown']) { ?>
@@ -348,7 +352,7 @@ if (!class_exists("ListLocations")) {
                                     <option value=""></option>
                                     <?php
                                     $service_body_cities_area          = explode(',', $this->options['service_body_dropdown']);
-                                    $service_body_cities               = isset($service_body_cities_area) && is_array($service_body_cities_area) && count($service_body_cities_area) > 0 ? $service_body_cities_area[1] : '';
+                                    $service_body_cities               = $this->arraySafeGet($service_body_cities_area, 1);
                                     $service_body_cities_dropdown      = $this->getCityList($this->options['root_server'], $service_body_states, $this->options['recursive']);
                                     foreach ($service_body_cities_dropdown as $key => $unique_city) {
                                         if ($unique_city == $this->options['city_skip_dropdown']) { ?>

@@ -3,9 +3,9 @@
 Contributors: pjaudiomv, klgrimley, bmltenabled
 Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Tags: bmlt, basic meeting list toolbox, List Locations, List Locations bmlt, narcotics anonymous, na
-Requires PHP: 5.6
+Requires PHP: 7.0
 Tested up to: 6.0.2
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -74,6 +74,10 @@ This section describes how to install the plugin and get it working.
 1. screenshot-1.png
 
 == Changelog ==
+
+= 2.2.2 =
+
+* Fix for various PHP warnings.
 
 = 2.2.1 =
 
