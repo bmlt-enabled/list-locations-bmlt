@@ -60,7 +60,7 @@ Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; c
 
 == MORE INFORMATION ==
 
-<a href="https://github.com/pjaudiomv/list-locations-bmlt" target="_blank">https://github.com/pjaudiomv/list-locations-bmlt</a>
+<a href="https://github.com/bmlt-enabled/list-locations-bmlt" target="_blank">https://github.com/bmlt-enabled/list-locations-bmlt</a>
 
 
 == Installation ==
