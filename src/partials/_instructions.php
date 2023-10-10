@@ -18,6 +18,7 @@
         <p><strong>state_skip</strong></p>
         <p><strong>delimiter</strong></p>
         <p><strong>list</strong></p>
+        <p><strong>custom_query</strong></p>
         <p>A minimum of root_server and services attribute are required, which would return all towns for that service body seperated by a comma.</p>
         <p>Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; services=&quot;50&quot;]</p>
     </div>
@@ -68,5 +69,11 @@
         <p><strong>list</strong></p>
         <p>You can list by the following town, county, borough, neighborhood. The default is town.</p>
         <p>Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; list=&quot;town&quot;]</p>
+    </div>
+    <h3 class="help-accordian"><strong>&nbsp;&nbsp;&nbsp;&nbsp;- custom_query</strong></h3>
+    <div>
+        <p><strong>custom_query</strong></p>
+        <p>You can add a custom query from semantic api to filter results, for ex by format &formats=54 .</p>
+        <p>Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; custom_query=&quot;&formats=54"]</p>
     </div>
 </div>
