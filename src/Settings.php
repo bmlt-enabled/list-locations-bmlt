@@ -49,12 +49,13 @@ class Settings
         $this->options['root_server'] = isset($_POST['root_server']) ? esc_url_raw($_POST['root_server']) : '';
         $this->options['service_body_dropdown'] = isset($_POST['service_body_dropdown']) ? sanitize_text_field($_POST['service_body_dropdown']) : '';
         $this->options['recursive'] = isset($_POST['recursive']) ? sanitize_text_field($_POST['recursive']) : '';
-        $this->options['delimiter_textbox'] = isset($_POST['delimiter_textbox']) ? $this->customSanitizeTextField($_POST['delimiter_textbox']) : '';
+        $this->options['delimiter_textbox'] = isset($_POST['delimiter_textbox']) ? $this->helper->customSanitizeTextField($_POST['delimiter_textbox']) : '';
         $this->options['state_checkbox'] = isset($_POST['state_checkbox']) ? sanitize_text_field($_POST['state_checkbox']) : '';
         $this->options['list_select'] = isset($_POST['list_select']) ? sanitize_text_field($_POST['list_select']) : '';
         $this->options['state_skip_dropdown'] = isset($_POST['state_skip_dropdown']) ? sanitize_text_field($_POST['state_skip_dropdown']) : '';
         $this->options['city_skip_dropdown'] = isset($_POST['city_skip_dropdown']) ? sanitize_text_field($_POST['city_skip_dropdown']) : '';
         $this->options['custom_query'] = isset($_POST['custom_query']) ? sanitize_text_field($_POST['custom_query']) : '';
+        $this->options['template'] = isset($_POST['template']) ? $this->helper->customSanitizeTextField($_POST['template']) : '';
         $this->saveAdminOptions();
     }
 
@@ -228,6 +229,16 @@ class Settings
                         </li>
                     </ul>
                 </div>
+                <div style="padding: 0 15px;" class="postbox">
+                    <h3>Template - Provide a custom template to render data.</h3>
+                    <p>This will override most other rendering settings. There is one special magic var #br# this will insert breakrule tag.</p>
+                    <p>Ex. #location_municipality#, #location_province#</p>
+                    <ul>
+                        <li>
+                            <input type="text" id="template" name="template" value="<?php echo $this->options['template']; ?>">
+                        </li>
+                    </ul>
+                </div>
 
                 <!-- Save Button -->
                 <input type="submit" value="SAVE CHANGES" name="listlocationssave" class="button-primary" />
@@ -273,7 +284,8 @@ class Settings
                 'list_select'           => 'town',
                 'state_skip_dropdown'   => '',
                 'city_skip_dropdown'    => '',
-                'custom_query'          => ''
+                'custom_query'          => '',
+                'template'              => ''
             );
             update_option($this->optionsName, $theOptions);
         }
@@ -300,45 +312,5 @@ class Settings
             echo "<p><a href='{$url}'>List Locations BMLT Settings</a></p>";
             echo '</div>';
         }
-    }
-
-    // We must use this for Delimiter as wordpress stock function trims whitespace which we don't want
-    public function customSanitizeTextField($str)
-    {
-        if (is_object($str) || is_array($str)) {
-            return '';
-        }
-
-        $str = (string) $str;
-
-        $filtered = wp_check_invalid_utf8($str);
-
-        if (str_contains($filtered, '<')) {
-            $filtered = wp_pre_kses_less_than($filtered);
-            // This will strip extra whitespace for us.
-            $filtered = wp_strip_all_tags($filtered, false);
-
-            /*
-             * Use HTML entities in a special case to make sure that
-             * later newline stripping stages cannot lead to a functional tag.
-             */
-            $filtered = str_replace("<\n", "&lt;\n", $filtered);
-        }
-
-        $filtered = preg_replace('/[\r\n\t ]+/', ' ', $filtered);
-
-        // Remove percent-encoded characters.
-        $found = false;
-        while (preg_match('/%[a-f0-9]{2}/i', $filtered, $match)) {
-            $filtered = str_replace($match[0], '', $filtered);
-            $found    = true;
-        }
-
-        if ($found) {
-            // Strip out the whitespace that may now exist after removing percent-encoded characters.
-            $filtered = preg_replace('/ +/', ' ', $filtered);
-        }
-
-        return $filtered;
     }
 }

@@ -165,4 +165,84 @@ class Helpers
 
         return $unique_areas;
     }
+
+    public function templateReplace($template, $data)
+    {
+        // Replace the special #br# template with <br> before any other processing
+        $template = str_replace('#br#', '<br>', $template);
+
+        // Check if any keys in template exists in data
+        $requiredKeys = $this->extractKeysFromTemplate($template);
+        if (!array_intersect_key($data, array_flip($requiredKeys))) {
+            return '';
+        }
+
+        // Replace known keys from data
+        $isAnyValueReplaced = false;
+        foreach ($data as $key => $value) {
+            $oldTemplate = $template;
+            $template = str_replace("#{$key}#", ($value !== null && $value !== '') ? $value : '', $template);
+
+            // Check if any actual replacement occurred
+            if ($oldTemplate !== $template && ($value !== null && $value !== '')) {
+                $isAnyValueReplaced = true;
+            }
+        }
+
+        // Replace remaining unmatched template variables with empty strings
+        $template = preg_replace('/#[^#]+#/', '', $template);
+
+        // If no actual value got replaced in the template, return an empty string
+        if (!$isAnyValueReplaced) {
+            return '';
+        }
+
+        return $template;
+    }
+
+    public function extractKeysFromTemplate($template)
+    {
+        preg_match_all('/#([^#]+)#/', $template, $matches);
+        return $matches[1] ?? [];
+    }
+
+    // We must use this for Delimiter as wordpress stock function trims whitespace which we don't want
+    public function customSanitizeTextField($str)
+    {
+        if (is_object($str) || is_array($str)) {
+            return '';
+        }
+
+        $str = (string) $str;
+
+        $filtered = wp_check_invalid_utf8($str);
+
+        if (str_contains($filtered, '<')) {
+            $filtered = wp_pre_kses_less_than($filtered);
+            // This will strip extra whitespace for us.
+            $filtered = wp_strip_all_tags($filtered, false);
+
+            /*
+             * Use HTML entities in a special case to make sure that
+             * later newline stripping stages cannot lead to a functional tag.
+             */
+            $filtered = str_replace("<\n", "&lt;\n", $filtered);
+        }
+
+        $filtered = preg_replace('/[\r\n\t ]+/', ' ', $filtered);
+
+        // Remove percent-encoded characters.
+        $found = false;
+        while (preg_match('/%[a-f0-9]{2}/i', $filtered, $match)) {
+            $filtered = str_replace($match[0], '', $filtered);
+            $found    = true;
+        }
+
+        if ($found) {
+            // Strip out the whitespace that may now exist after removing percent-encoded characters.
+            $filtered = preg_replace('/ +/', ' ', $filtered);
+        }
+
+        return $filtered;
+    }
 }

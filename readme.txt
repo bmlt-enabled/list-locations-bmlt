@@ -80,6 +80,7 @@ This section describes how to install the plugin and get it working.
 
 = 2.3.0 =
 
+* You can now specify a template using magic variables from the BMLT.
 * Added option to specify a custom query.
 * Refactored codebase.
 
