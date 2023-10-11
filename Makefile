@@ -9,7 +9,7 @@ help:  ## Print the help documentation
 .PHONY: build
 build:  ## Build
 	git archive --format=zip --output=${ZIP_FILENAME} $(COMMIT)
-	mkdir ${BUILD_DIR} && mv ${ZIP_FILENAME} ${BUILD_DIR}/
+	mkdir -p ${BUILD_DIR} && mv ${ZIP_FILENAME} ${BUILD_DIR}/
 
 .PHONY: clean
 clean:  ## clean

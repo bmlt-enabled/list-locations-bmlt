@@ -18,7 +18,7 @@ class Settings
         add_action("admin_notices", [$this, "isRootServerMissing"]);
     }
 
-    public function createMenu(): void
+    public function createMenu(string $baseFile): void
     {
         add_options_page(
             'List Locations BMLT', // Page Title
@@ -28,10 +28,7 @@ class Settings
             [$this, 'adminOptionsPage'] // Callback function to display the page content
         );
 
-        add_filter('plugin_action_links_' . plugin_basename(__FILE__), [
-            $this,
-            'filterPluginActions'
-        ], 10, 2);
+        add_filter('plugin_action_links_' . $baseFile, [$this, 'filterPluginActions'], 10, 2);
     }
 
     public function adminOptionsPage()
@@ -261,11 +258,11 @@ class Settings
      * @param $file
      * @return mixed
      */
-    public function filterPluginActions($links, $file)
+    public function filterPluginActions($links)
     {
         // If your plugin is under a different top-level menu than Settings (IE - you changed the function above to something other than add_options_page)
         // Then you're going to want to change options-general.php below to the name of your top-level page
-        $settings_link = '<a href="options-general.php?page=' . basename(__FILE__) . '">' . __('Settings') . '</a>';
+        $settings_link = '<a href="options-general.php?page=list-locations-plugin">Settings</a>';
         array_unshift($links, $settings_link);
         // before other links
         return $links;
