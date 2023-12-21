@@ -63,14 +63,17 @@ class Helpers
         }
     }
 
-    public function getStateList(string $root_server, string $services, bool $recursive, string $customQuery = null): array
+    public function getList(string $root_server, bool $recursive, string $dataFieldKey, string $services = null, string $customQuery = null): array
     {
         if ($customQuery) {
             parse_str($customQuery, $queryParams);
         } else {
-            $queryParams = [
+            $queryParams = $services ? [
                 'services' => explode(',', $services),
-                'data_field_key' => 'location_province',
+                'data_field_key' => $dataFieldKey,
+                'recursive' => $recursive ? 1 : 0
+            ] : [
+                'data_field_key' => $dataFieldKey,
                 'recursive' => $recursive ? 1 : 0
             ];
         }
@@ -81,50 +84,20 @@ class Helpers
         } else {
             $listResults = $response['data'];
         }
-        $unique_states = [];
+        $unique_list = [];
         foreach ($listResults as $value) {
-            if ($value['location_province'] != '') {
-                $unique_states[] .= str_replace('.', '', strtoupper(trim($value['location_province'])));
+            $fieldValue = $value[$dataFieldKey];
+            if (!empty($fieldValue)) {
+                $unique_list[] = str_replace('.', '', strtoupper(trim($fieldValue)));
             }
         }
 
-        $unique_states = array_unique($unique_states);
-        asort($unique_states);
+        $unique_list = array_unique($unique_list);
+        asort($unique_list);
 
-        return $unique_states;
+        return $unique_list;
     }
 
-    public function getCityList(string $root_server, string $services, bool $recursive, string $customQuery = null): array
-    {
-        if ($customQuery) {
-            parse_str($customQuery, $queryParams);
-        } else {
-            $queryParams = [
-                'services' => explode(',', $services),
-                'data_field_key' => 'location_municipality',
-                'recursive' => $recursive ? 1 : 0
-            ];
-        }
-
-        $response = $this->getRemoteResponse($root_server, $queryParams);
-        if ($response['status'] === 'error') {
-            $listResults = [];
-        } else {
-            $listResults = $response['data'];
-        }
-        $unique_cities = [];
-        foreach ($listResults as $value) {
-            $city = $value['location_municipality'];
-            if (!empty($city)) {
-                $unique_cities[] = str_replace('.', '', strtoupper($city));
-            }
-        }
-
-        $unique_cities = array_unique($unique_cities);
-        asort($unique_cities);
-
-        return $unique_cities;
-    }
 
     public function testRootServer($root_server)
     {

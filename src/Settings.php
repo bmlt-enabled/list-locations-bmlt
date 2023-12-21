@@ -114,22 +114,22 @@ class Settings
             return '<option value="">Root Server Not Set</option>';
         }
         $service_body_states_area = explode(',', $this->options['service_body_dropdown']);
-        $service_body_states = Helpers::arraySafeGet($service_body_states_area, 1);
-        $service_body_states_dropdown = $this->helper->getStateList($this->options['root_server'], $service_body_states, $this->options['recursive'], $this->options['custom_query']);
+        $service_body_states = Helpers::arraySafeGet($service_body_states_area, 1) ?? null;
+        $service_body_states_dropdown = $this->helper->getList($this->options['root_server'], $this->options['recursive'], 'location_province', $service_body_states, $this->options['custom_query']);
         return $this->printDropdownOptions($service_body_states_dropdown, $this->options['state_skip_dropdown'], function ($state) {
             return $state;
         });
     }
 
 
-    private function getCitySkipDropdownOptions()
+    private function getCitySkipDropdownOptions(): string
     {
         if (!isset($this->options['root_server']) || empty($this->options['root_server'])) {
             return '<option value="">Root Server Not Set</option>';
         }
         $service_body_cities_area = explode(',', $this->options['service_body_dropdown']);
         $service_body_cities = Helpers::arraySafeGet($service_body_cities_area, 1);
-        $service_body_cities_dropdown = $this->helper->getCityList($this->options['root_server'], $service_body_cities, $this->options['recursive'], $this->options['custom_query']);
+        $service_body_cities_dropdown = $this->helper->getList($this->options['root_server'], $this->options['recursive'], 'location_municipality', $service_body_cities, $this->options['custom_query']);
 
         return $this->printDropdownOptions($service_body_cities_dropdown, $this->options['city_skip_dropdown'], function ($city) {
             return $city;
