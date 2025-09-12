@@ -6,31 +6,24 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - name: Check out code 🛒
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Setup PHP 🐫
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: 8.3
 
       - name: PHPCS checker 🧹
         id: php-codesniffer
         run: make lint
 
-      - uses: act10ns/slack@v1
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#list-locations-bmlt'
-        if: failure()
-
   package:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       BUILD_DIR: "build"
       DIST_DIR_GITHUB: "dist/github"
@@ -40,7 +33,7 @@ jobs:
     needs: [ lint ]
     steps:
       - name: Check out code 🛒
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Build package 🔧
         id: build-package
@@ -65,7 +58,7 @@ jobs:
           echo "RELEASE_TYPE=${RELEASE_TYPE}" >> $GITHUB_ENV
 
       - name: Create Release 🎉
-        uses: ncipollo/release-action@v1.11.1
+        uses: ncipollo/release-action@v1.20.0
         if: github.ref_type == 'tag'
         with:
           artifacts: ${{ env.ARTIFACT_PATH }}
