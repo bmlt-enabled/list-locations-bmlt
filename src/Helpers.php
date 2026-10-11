@@ -12,17 +12,40 @@ class Helpers
         'timeout' => 601
     );
 
+    /**
+     * Default number of seconds to cache root server responses.
+     *
+     * Locations rarely change, so responses are cached for a week by default.
+     * Can be changed with the 'list_locations_cache_ttl' filter, returning 0 disables caching.
+     */
+    const CACHE_TTL = WEEK_IN_SECONDS;
+
+    /**
+     * Option holding the current cache version, changing it invalidates all cached responses.
+     */
+    const CACHE_VERSION_OPTION = 'list_locations_cache_version';
+
     public static function arraySafeGet(array $array, $key, $default = null)
     {
         return $array[$key] ?? $default;
     }
 
-    private function getRemoteResponse(string $root_server, array $queryParams = [], string $switcher = 'GetSearchResults'): array
+    private function getRemoteResponse(string $root_server, array $queryParams = [], string $switcher = 'GetSearchResults', bool $useCache = true): array
     {
         $url = $root_server . self::BASE_API_ENDPOINT . $switcher;
 
         if (!empty($queryParams)) {
             $url .= '&' . http_build_query($queryParams);
+        }
+
+        $cacheTtl = (int) apply_filters('list_locations_cache_ttl', self::CACHE_TTL);
+        $useCache = $useCache && $cacheTtl > 0;
+        $cacheKey = 'list_locations_' . md5(get_option(self::CACHE_VERSION_OPTION, '') . $url);
+        if ($useCache) {
+            $cached = get_transient($cacheKey);
+            if (is_array($cached)) {
+                return $cached;
+            }
         }
 
         $response = wp_remote_get($url, self::HTTP_RETRIEVE_ARGS);
@@ -38,7 +61,24 @@ class Helpers
             return ['status' => 'error', 'message' => 'Received empty data from server.'];
         }
 
-        return ['status' => 'success', 'data' => $data];
+        $result = ['status' => 'success', 'data' => $data];
+        if ($useCache) {
+            set_transient($cacheKey, $result, $cacheTtl);
+        }
+        return $result;
+    }
+
+    /**
+     * Invalidate all cached root server responses.
+     *
+     * Rather than deleting each transient, the cache version is changed so old keys are never read again
+     * and expire on their own.
+     *
+     * @return void
+     */
+    public static function clearCache(): void
+    {
+        update_option(self::CACHE_VERSION_OPTION, uniqid('', true));
     }
 
 
@@ -78,7 +118,8 @@ class Helpers
             ];
         }
 
-        $response = $this->getRemoteResponse($root_server, $queryParams);
+        // Admin-only dropdowns always hit the root server live, bypassing the cache.
+        $response = $this->getRemoteResponse($root_server, $queryParams, 'GetSearchResults', false);
         if ($response['status'] === 'error') {
             $listResults = [];
         } else {
@@ -101,7 +142,8 @@ class Helpers
 
     public function testRootServer($root_server)
     {
-        $response = $this->getRemoteResponse($root_server, [], 'GetServerInfo');
+        // Admin connection check always hits the root server live, bypassing the cache.
+        $response = $this->getRemoteResponse($root_server, [], 'GetServerInfo', false);
         if ($response['status'] === 'error' || !is_array($response['data'])) {
             return '';
         }
@@ -114,7 +156,8 @@ class Helpers
 
     public function getAreas($root_server)
     {
-        $response = $this->getRemoteResponse($root_server, [], 'GetServiceBodies');
+        // Admin service body dropdown always hits the root server live, bypassing the cache.
+        $response = $this->getRemoteResponse($root_server, [], 'GetServiceBodies', false);
         if ($response['status'] === 'error') {
             $error_message = '<div style="font-size: 20px;text-align:center;font-weight:normal;color:#F00;margin:0 auto;margin-top: 30px;">';
             $error_message .= '<p>Problem Connecting to BMLT Root Server</p>';

@@ -36,6 +36,9 @@ class Settings
         if (!empty($_POST['listlocationssave']) && wp_verify_nonce($_POST['_wpnonce'], 'listlocationsupdate-options')) {
             $this->updateAdminOptions();
             $this->printSuccessMessage();
+        } elseif (!empty($_POST['listlocationsresetcache']) && wp_verify_nonce($_POST['_wpnonce'], 'listlocationsupdate-options')) {
+            Helpers::clearCache();
+            $this->printCacheClearedMessage();
         }
         $this->printAdminForm();
     }
@@ -54,11 +57,17 @@ class Settings
         $this->options['custom_query'] = isset($_POST['custom_query']) ? sanitize_text_field($_POST['custom_query']) : '';
         $this->options['template'] = isset($_POST['template']) ? $this->helper->customSanitizeTextField($_POST['template']) : '';
         $this->saveAdminOptions();
+        Helpers::clearCache();
     }
 
     private function printSuccessMessage()
     {
         echo '<div class="updated"><p>Success! Your changes were successfully saved!</p></div>';
+    }
+
+    private function printCacheClearedMessage()
+    {
+        echo '<div class="updated"><p>Success! The cache was cleared. Fresh data will be fetched from the root server.</p></div>';
     }
 
     private function getConnectionStatus()
@@ -233,6 +242,17 @@ class Settings
                     <ul>
                         <li>
                             <input type="text" id="template" name="template" value="<?php echo $this->options['template']; ?>">
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Cache Section -->
+                <div style="padding: 0 15px;" class="postbox">
+                    <h3>Cache</h3>
+                    <p>Root server responses are cached for a week to speed up page loads. Saving changes clears the cache automatically. Use the button below to clear it manually, for example after locations change on the root server.</p>
+                    <ul>
+                        <li>
+                            <input type="submit" value="RESET CACHE" name="listlocationsresetcache" class="button-secondary" />
                         </li>
                     </ul>
                 </div>
