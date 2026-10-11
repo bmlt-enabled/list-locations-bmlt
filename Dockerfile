@@ -1,13 +1,14 @@
-FROM wordpress:6.8.1-php8.3-apache
+FROM wordpress:7.1-php8.3-apache
+
 RUN apt-get update && \
 	apt-get install -y  --no-install-recommends ssl-cert && \
 	rm -r /var/lib/apt/lists/* && \
 	a2enmod ssl rewrite expires && \
 	a2ensite default-ssl
 
-ENV PHP_INI_PATH "/usr/local/etc/php/php.ini"
+ENV PHP_INI_PATH="/usr/local/etc/php/php.ini"
 
-RUN pecl install xdebug-3.4.2 && docker-php-ext-enable xdebug \
+RUN pecl install xdebug-3.5.1 && docker-php-ext-enable xdebug \
     && echo "xdebug.mode=debug" >> ${PHP_INI_PATH} \
     && echo "xdebug.client_port=9003" >> ${PHP_INI_PATH} \
     && echo "xdebug.client_host=host.docker.internal" >> ${PHP_INI_PATH} \
