@@ -47,7 +47,7 @@ class Settings
     private function updateAdminOptions()
     {
         $this->options['root_server'] = isset($_POST['root_server']) ? esc_url_raw($_POST['root_server']) : '';
-        $this->options['service_body_dropdown'] = isset($_POST['service_body_dropdown']) ? sanitize_text_field($_POST['service_body_dropdown']) : '';
+        $this->options['service_bodies'] = isset($_POST['service_bodies']) && is_array($_POST['service_bodies']) ? self::serviceBodyIds($_POST['service_bodies']) : '';
         $this->options['recursive'] = isset($_POST['recursive']) ? sanitize_text_field($_POST['recursive']) : '';
         $this->options['delimiter_textbox'] = isset($_POST['delimiter_textbox']) ? $this->helper->customSanitizeTextField($_POST['delimiter_textbox']) : '';
         $this->options['state_checkbox'] = isset($_POST['state_checkbox']) ? sanitize_text_field($_POST['state_checkbox']) : '';
@@ -82,6 +82,16 @@ class Settings
         ];
     }
 
+    /**
+     * Positive service body IDs, as a comma-separated list ("12,34").
+     */
+    public static function serviceBodyIds($ids): string
+    {
+        $ids = is_array($ids) ? $ids : explode(',', (string) $ids);
+        $ids = array_filter(array_map('absint', $ids));
+        return implode(',', array_unique($ids));
+    }
+
     private function printDropdownOptions($items, $selectedValue, $formatterCallback)
     {
         return implode('', array_map(function ($item) use ($selectedValue, $formatterCallback) {
@@ -92,21 +102,31 @@ class Settings
 
     private function getAreaDropdownOptions($connectionStatus)
     {
+        $selected = array_filter(explode(',', $this->options['service_bodies']));
         if ($connectionStatus['status']) {
             $unique_areas = $this->helper->getAreas($this->options['root_server']);
-            asort($unique_areas);
-            return $this->printDropdownOptions($unique_areas, $this->options['service_body_dropdown'], function ($unique_area) {
-                // Extract area data and create a description
-                $area_data = explode(',', $unique_area);
-                $area_name = Helpers::arraySafeGet($area_data, 0);
-                $area_id = Helpers::arraySafeGet($area_data, 1);
-                $area_parent_name = Helpers::arraySafeGet($area_data, 3);
-                $area_parent = Helpers::arraySafeGet($area_data, 2);
-                return "{$area_name} ({$area_id}) {$area_parent_name} ({$area_parent})";
-            });
-        } else {
-            return '<option selected="selected" value="' . $this->options['service_body_dropdown'] . '">Not Connected - Can not get Service Bodies</option>';
+            if (is_array($unique_areas)) {
+                asort($unique_areas);
+                $options = '';
+                foreach ($unique_areas as $unique_area) {
+                    // Extract area data and create a description
+                    $area_data = explode(',', $unique_area);
+                    $area_name = Helpers::arraySafeGet($area_data, 0);
+                    $area_id = Helpers::arraySafeGet($area_data, 1);
+                    $area_parent_name = Helpers::arraySafeGet($area_data, 3);
+                    $area_parent = Helpers::arraySafeGet($area_data, 2);
+                    $isSelected = in_array((string) $area_id, $selected, true) ? ' selected="selected"' : '';
+                    $options .= '<option' . $isSelected . ' value="' . esc_attr($area_id) . '">' . esc_html("{$area_name} ({$area_id}) {$area_parent_name} ({$area_parent})") . '</option>';
+                }
+                return $options;
+            }
         }
+        // Not connected: keep the current selection so saving does not lose it.
+        $options = '';
+        foreach ($selected as $id) {
+            $options .= '<option selected="selected" value="' . esc_attr($id) . '">Not Connected - Service Body ' . esc_html($id) . '</option>';
+        }
+        return $options ?: '<option value="">Not Connected - Can not get Service Bodies</option>';
     }
 
     private function getListSelectDropdownOptions()
@@ -122,8 +142,7 @@ class Settings
         if (!isset($this->options['root_server']) || empty($this->options['root_server'])) {
             return '<option value="">Root Server Not Set</option>';
         }
-        $service_body_states_area = explode(',', $this->options['service_body_dropdown']);
-        $service_body_states = Helpers::arraySafeGet($service_body_states_area, 1) ?? null;
+        $service_body_states = $this->options['service_bodies'] ?: null;
         $service_body_states_dropdown = $this->helper->getList($this->options['root_server'], $this->options['recursive'], 'location_province', $service_body_states, $this->options['custom_query']);
         return $this->printDropdownOptions($service_body_states_dropdown, $this->options['state_skip_dropdown'], function ($state) {
             return $state;
@@ -136,8 +155,7 @@ class Settings
         if (!isset($this->options['root_server']) || empty($this->options['root_server'])) {
             return '<option value="">Root Server Not Set</option>';
         }
-        $service_body_cities_area = explode(',', $this->options['service_body_dropdown']);
-        $service_body_cities = Helpers::arraySafeGet($service_body_cities_area, 1);
+        $service_body_cities = $this->options['service_bodies'] ?: null;
         $service_body_cities_dropdown = $this->helper->getList($this->options['root_server'], $this->options['recursive'], 'location_municipality', $service_body_cities, $this->options['custom_query']);
 
         return $this->printDropdownOptions($service_body_cities_dropdown, $this->options['city_skip_dropdown'], function ($city) {
@@ -171,16 +189,15 @@ class Settings
 
                 <!-- Service Body Section -->
                 <div style="padding: 0 15px;" class="postbox">
-                    <h3>Service Body</h3>
-                    <p>This service body will be used when no service body is defined in the shortcode.</p>
+                    <h3>Service Bodies</h3>
+                    <p>These service bodies will be used when no service body is defined in the shortcode.</p>
                     <ul>
                         <li>
-                            <label for="service_body_dropdown">Default Service Body: </label>
-                            <select style="display:inline;" onchange="getListLocationsValueSelected()" id="service_body_dropdown" name="service_body_dropdown" class="list_locations_service_body_select">
+                            <label for="service_bodies">Default Service Bodies: </label>
+                            <select style="display:inline;" multiple="multiple" id="service_bodies" name="service_bodies[]" class="list_locations_service_body_select" data-placeholder="Select service bodies">
                                 <?php echo $areaDropdownOptions; ?>
                             </select>
-                            <div style="display:inline; margin-left:15px;" id="txtSelectedValues1"></div>
-                            <p id="txtSelectedValues2"></p>
+                            <br/>
                             <input type="checkbox" id="recursive" name="recursive" value="1" <?php echo ($this->options['recursive'] == "1" ? "checked" : "") ?>/>
                             <label for="recursive">Recurse Service Bodies</label>
                         </li>
@@ -265,9 +282,6 @@ class Settings
             <br/><br/>
             <?php include plugin_dir_path(__FILE__) . 'partials/_instructions.php'; ?>
         </div>
-
-        <!-- Scripts -->
-        <script type="text/javascript">getListLocationsValueSelected();</script>
         <?php
     }
 
@@ -294,7 +308,7 @@ class Settings
         if (!$theOptions = get_option($this->optionsName)) {
             $theOptions = array(
                 "root_server"           => '',
-                "service_body_dropdown" => '',
+                "service_bodies"        => '',
                 'recursive'             => '0',
                 'state_checkbox'        => '1',
                 'delimiter_textbox'     => ', ',
@@ -307,6 +321,13 @@ class Settings
             update_option($this->optionsName, $theOptions);
         }
         $this->options = $theOptions;
+        if (!isset($this->options['service_bodies'])) {
+            // Before 2.6.0 one service body was stored as "name,id,parent_id,parent_name".
+            $oldValue = explode(',', $this->options['service_body_dropdown'] ?? '');
+            $this->options['service_bodies'] = self::serviceBodyIds(Helpers::arraySafeGet($oldValue, 1, ''));
+            unset($this->options['service_body_dropdown']);
+            update_option($this->optionsName, $this->options);
+        }
         $this->options['root_server'] = untrailingslashit(preg_replace('/^(.*)\/(.*php)$/', '$1', $this->options['root_server']));
     }
     /**
