@@ -76,4 +76,11 @@
         <p>You can add a custom query from semantic api to filter results, for ex by format &formats=54 .</p>
         <p>Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; custom_query=&quot;&formats=54"]</p>
     </div>
+    <h3 class="help-accordian"><strong>Table</strong></h3>
+    <div>
+        <p>[list_locations_table] shows a table with one row group per service body: its name linked to its website, its helpline, and for each state it meets in, the towns where it meets.</p>
+        <p><strong>Attributes:</strong> root_server, services, recursive, custom_query. Each defaults to the settings above.</p>
+        <p>With recursive=&quot;1&quot; every service body below the ones in services gets a row of its own.</p>
+        <p>Ex. [list_locations_table services=&quot;50,37&quot; recursive=&quot;1&quot;]</p>
+    </div>
 </div>

@@ -30,7 +30,7 @@ class Helpers
         return $array[$key] ?? $default;
     }
 
-    private function getRemoteResponse(string $root_server, array $queryParams = [], string $switcher = 'GetSearchResults', bool $useCache = true): array
+    private function getRemoteResponse(string $root_server, array $queryParams = [], string $switcher = 'GetSearchResults', bool $useCache = true, bool $allowEmpty = false): array
     {
         $url = $root_server . self::BASE_API_ENDPOINT . $switcher;
 
@@ -57,7 +57,7 @@ class Helpers
         $body = wp_remote_retrieve_body($response);
         $data = json_decode($body, true);
 
-        if (empty($data)) {
+        if ($allowEmpty ? !is_array($data) : empty($data)) {
             return ['status' => 'error', 'message' => 'Received empty data from server.'];
         }
 
@@ -101,6 +101,22 @@ class Helpers
         } else {
             return $response['data'];
         }
+    }
+
+    /**
+     * Service bodies on the root server, cached.
+     */
+    public function getServiceBodies(string $root_server): array
+    {
+        return $this->getRemoteResponse($root_server, [], 'GetServiceBodies');
+    }
+
+    /**
+     * GetSearchResults with the given query, cached. An empty list (no meetings) is a valid answer.
+     */
+    public function getMeetings(string $root_server, array $queryParams): array
+    {
+        return $this->getRemoteResponse($root_server, $queryParams, 'GetSearchResults', true, true);
     }
 
     public function getList(string $root_server, bool $recursive, string $dataFieldKey, string $services = null, string $customQuery = null): array

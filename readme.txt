@@ -19,6 +19,10 @@ Attributes: root_server, services, recursive, state, delimiter, list, state_skip
 
 -- Shortcode parameters can be combined
 
+TABLE SHORTCODE
+Basic: [list_locations_table]
+Attributes: root_server, services, recursive, custom_query
+
 == Usage ==
 
 A minimum of root_server and services attribute are required, which would return all towns for that service body seperated by a comma.
@@ -49,6 +53,22 @@ Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; l
 **custom_query** You can add a custom query from semantic api to filter results, for ex by format `&formats=54`.
 Ex. [list_locations root_server=&quot;https://www.domain.org/main_server&quot; custom_query=&quot;&formats=54&quot;]
 
+== Table ==
+
+[list_locations_table] shows a table with one row group per service body: its name linked to its website, its helpline linked for dialling, and for each state it meets in, the towns where it meets.
+
+State abbreviations and names in any letter case are shown as the full state name (VA, va. and Virginia become Virginia), towns that differ only in letter case or spacing are listed once, and virtual meetings without a town are left out.
+
+The root server, service bodies and recursive default to the settings page. To show several service bodies, separate them by a comma.
+Ex. [list_locations_table services=&quot;50,37,26&quot;]
+
+**Recursive:** add recursive=&quot;1&quot; to also show every service body below the ones in services. Each one gets a row of its own with its own name, website, helpline and towns.
+Ex. [list_locations_table services=&quot;50&quot; recursive=&quot;1&quot;]
+
+**custom_query** adds filters to the search, for ex by format `&formats=54`. The service bodies searched and the fields returned are always those of the table.
+
+If the root server cannot be reached, administrators see the reason and visitors a short notice.
+
 == EXAMPLES ==
 
 <a href="https://www.crna.org/area-service-committees/">https://www.crna.org/area-service-committees/</a>
@@ -77,6 +97,11 @@ This section describes how to install the plugin and get it working.
 1. screenshot-1.png
 
 == Changelog ==
+
+= Unreleased =
+
+* Added the [list_locations_table] shortcode: a table of service bodies with their website, helpline, and the towns in each state where they meet.
+* Several default service bodies can be chosen on the settings page. The service body chosen before is kept.
 
 = 2.5.0 =
 

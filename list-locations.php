@@ -22,6 +22,7 @@ spl_autoload_register(function (string $class) {
 
 use ListLocations\Settings;
 use ListLocations\Shortcode;
+use ListLocations\Table;
 
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class ListLocations
@@ -42,6 +43,7 @@ class ListLocations
             add_action("admin_enqueue_scripts", [$this, "enqueueBackendFiles"], 500);
         } else {
             add_shortcode('list_locations', [$this, 'listShortcode']);
+            add_shortcode('list_locations_table', [$this, 'tableShortcode']);
         }
     }
 
@@ -55,6 +57,12 @@ class ListLocations
     {
         $shortcode = new Shortcode();
         return $shortcode->render($atts);
+    }
+
+    public function tableShortcode($atts)
+    {
+        $table = new Table();
+        return $table->render($atts);
     }
 
     public function enqueueBackendFiles($hook)
