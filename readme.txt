@@ -4,8 +4,8 @@ Contributors: pjaudiomv, klgrimley, bmltenabled
 Plugin URI: https://wordpress.org/plugins/list-locations-bmlt/
 Tags: bmlt, basic meeting list toolbox, List Locations, List Locations bmlt, narcotics anonymous, na
 Requires PHP: 8.0
-Tested up to: 6.8.2
-Stable tag: 2.5.0
+Tested up to: 7.1
+Stable tag: 2.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,7 +98,7 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
-= Unreleased =
+= 2.6.0 =
 
 * Added the [list_locations_table] shortcode: a table of service bodies with their website, helpline, and the towns in each state where they meet.
 * Several default service bodies can be chosen on the settings page. The service body chosen before is kept.
