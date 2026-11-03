@@ -40,7 +40,7 @@ class Shortcode
     {
         return [
             "root_server" => $this->settings->options['root_server'],
-            'services' => explode(',', $this->settings->options['service_body_dropdown'])[1] ?? null,
+            'services' => $this->settings->options['service_bodies'] ?: null,
             'recursive' => $this->settings->options['recursive'],
             'state' => $this->settings->options['state_checkbox'],
             'delimiter' => $this->settings->options['delimiter_textbox'] ?: ', ',
